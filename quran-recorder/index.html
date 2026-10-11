@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quran Recorder — Surah &amp; Ayah Logger</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>📖 Quran Recorder</h1>
+  <p class="subtitle">Surah &amp; Ayah recorder · Scroll finder · 6,236 verses · Kalima tracker</p>
+  <nav class="tabs">
+    <button class="tab active" data-tab="recorder">🎙 Recorder</button>
+    <button class="tab" data-tab="finder">📜 Scroll Finder</button>
+    <button class="tab" data-tab="kalima">🕋 Kalima</button>
+    <button class="tab" data-tab="log">🗓 Daily Log</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ RECORDER ============ -->
+  <section id="tab-recorder" class="panel active">
+    <div class="recorder-grid">
+      <div class="card">
+        <h2>Selection</h2>
+        <label>Surah</label>
+        <select id="rec-surah"></select>
+        <label>Ayah <span id="rec-ayah-max" class="muted"></span></label>
+        <div class="ayah-picker">
+          <button id="ayah-prev" title="Previous ayah">−</button>
+          <input id="rec-ayah" type="number" min="1" value="1">
+          <button id="ayah-next" title="Next ayah">+</button>
+        </div>
+        <div class="verse-badge">
+          Global verse <strong id="rec-global">1</strong> / 6236
+        </div>
+        <div id="rec-surah-info" class="muted"></div>
+      </div>
+
+      <div class="card">
+        <h2>Record</h2>
+        <div class="rec-controls">
+          <button id="btn-record" class="big rec">● Record</button>
+          <button id="btn-stop" class="big stop" disabled>■ Stop</button>
+        </div>
+        <div id="rec-timer" class="timer">00:00</div>
+        <div id="rec-status" class="muted">Microphone idle</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recordings for <span id="rec-day-label"></span></h2>
+      <div id="rec-list" class="rec-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ SCROLL FINDER ============ -->
+  <section id="tab-finder" class="panel">
+    <div class="finder-controls card">
+      <div class="finder-row">
+        <input id="finder-search" type="search" placeholder="Search surah name or number…">
+        <div class="verse-jump">
+          <input id="finder-verse" type="number" min="1" max="6236" placeholder="Verse # 1–6236">
+          <button id="finder-go">Find</button>
+        </div>
+      </div>
+      <div id="finder-result" class="muted"></div>
+    </div>
+    <div id="surah-scroll" class="surah-scroll"></div>
+  </section>
+
+  <!-- ============ KALIMA ============ -->
+  <section id="tab-kalima" class="panel">
+    <div class="card">
+      <h2>Kalima Sequence</h2>
+      <p class="muted">
+        A complete kalima is the set <strong>1 · 6 · 8 · 10 · 12 · 23 · 24 · 27</strong>.
+        Pick which surah counts as <strong>surah 1</strong> — the whole sequence shifts by that offset (wrapping around 114).
+      </p>
+      <div class="kalima-controls">
+        <label>Surah 1 is:</label>
+        <select id="kalima-offset"></select>
+        <div class="presets">
+          <span class="muted">Presets:</span>
+          <button class="preset" data-off="27">27</button>
+          <button class="preset" data-off="24">24</button>
+          <button class="preset" data-off="12">12</button>
+          <button class="preset" data-off="6">6</button>
+        </div>
+      </div>
+      <div id="kalima-progress" class="progress"><div id="kalima-progress-bar"></div></div>
+      <div id="kalima-status" class="muted"></div>
+      <table class="kalima-table">
+        <thead><tr><th>Kalima</th><th>Surah #</th><th>Surah</th><th>Ayahs</th><th>Stamp</th></tr></thead>
+        <tbody id="kalima-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ DAILY LOG ============ -->
+  <section id="tab-log" class="panel">
+    <div class="card">
+      <h2>Daily Log</h2>
+      <div class="log-controls">
+        <input id="log-date" type="date">
+        <button id="log-export">⬇ Export day (JSON)</button>
+        <button id="log-export-all">⬇ Export all</button>
+      </div>
+      <div id="log-stats" class="muted"></div>
+      <div id="log-entries" class="log-entries"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>All data stays in your browser (IndexedDB + localStorage). Total verses: <strong>6236</strong>.</span>
+</footer>
+
+<script src="surah-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
