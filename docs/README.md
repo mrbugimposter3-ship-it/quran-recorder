@@ -8,8 +8,10 @@ A zero-dependency static web app for recording Quran recitation throughout the d
 
 1. **All day, on your phone:** open the app, pick a surah/ayah (or global verse # 1–6236), record it. Every recording is timestamped into today's log.
 2. **Push to GitHub:** tap **⬆ Push to GitHub** (or enable *auto-push after every recording*). Your day goes to `logs/YYYY-MM-DD.json` in the repo.
-3. **8:00 PM ET, automatically:** a GitHub Action reads the day's log, looks up the **Arabic (Uthmani) text** of every ayah you recorded, converts all numbers to Arabic-Indic digits, and commits a ready script to **`scripts/YYYY-MM-DD.md`**.
-4. Anytime: tap **📜 Arabic script** in the app to download today's script instantly, no waiting.
+3. **8:00 PM ET, automatically:** a GitHub Action reads the day's log, looks up the **Arabic (Uthmani) text** of every ayah you recorded, converts all numbers to Arabic-Indic digits, and commits two scripts:
+   - **`scripts/YYYY-MM-DD.md`** — the daily wird script with word-by-word جُمَّل analysis
+   - **`scripts/YYYY-MM-DD-youtube.md`** — a **YouTube-ready video script** in the channel-kit format (timed sections, « » voiceover text, [B-ROLL] AI prompts, paste-ready description with chapters/tags)
+4. Anytime: tap **📜 Arabic script** or **🎬 YouTube script** in the app to download instantly, no waiting.
 
 ## Features
 

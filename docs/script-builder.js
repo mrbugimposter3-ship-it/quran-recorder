@@ -191,6 +191,7 @@
 
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
   function fmtClock(sec) { return Math.floor(sec / 60) + ":" + pad2(sec % 60); }
+  function ayahWord(n) { return n === 1 ? "آية" : n === 2 ? "آيتان" : n <= 10 ? "آيات" : "آية"; }
 
   function buildYouTubeScript(dateKey, entries) {
     var recs = entries.filter(function (e) { return e.type === "recitation" || e.type === "ayah-stamp"; })
@@ -221,7 +222,7 @@
     L.push("**السلسلة:** 🕯️ نور | **المدة التقديرية:** ~" + toArabicDigits(estMin) + " دقيقة (~" + toArabicDigits(estWords) +
            " كلمة) | **النبرة:** خاشعة، هادئة، تدبّرية");
     L.push("**موسيقى:** ناي/عود خافت مقام نهوند (−22dB) | **سرعة الصوت:** 0.92");
-    L.push("**المصدر:** سجل تلاوات " + dateKey + " — " + toArabicDigits(recs.length) + " آية");
+    L.push("**المصدر:** سجل تلاوات " + dateKey + " — " + toArabicDigits(recs.length) + " " + ayahWord(recs.length));
     L.push("");
     L.push("---");
     L.push("");
@@ -231,7 +232,7 @@
     L.push("> 🎙️ صوت فقط على شاشة سوداء، ثم مصباح يشتعل ببطء");
     L.push("");
     L.push("«بسم الله الرحمن الرحيم. في يوم " + arabicDate(dateKey) + "… تُليت " + toArabicDigits(recs.length) +
-           " من آيات كتاب الله… آيةً آية، وسُجِّلت كل واحدة بوقتها. الليلة نتوقف عند كل آية: نسمعها… نتدبّرها… ونفكّ شيفرة كلماتها بحساب الجُمَّل، حرفًا حرفًا. ابقَ معنا.»");
+           " " + ayahWord(recs.length) + " من كتاب الله… آيةً آية، وسُجِّلت كل واحدة بوقتها. الليلة نتوقف عند كل آية: نسمعها… نتدبّرها… ونفكّ شيفرة كلماتها بحساب الجُمَّل، حرفًا حرفًا. ابقَ معنا.»");
     L.push("");
     L.push("**[B-ROLL — للمونتاج/الذكاء الاصطناعي]:**");
     L.push("1. `Cinematic macro shot: an oil lamp igniting in darkness, warm golden light, slow motion, film grain, royal dark navy and gold palette, 4K, 16:9`");
@@ -317,7 +318,7 @@
     L.push("> 🎙️ بنبرة أهدأ وأبطأ — الموسيقى ترتفع قليلاً ثم تخفت");
     L.push("");
     L.push("«هذا كان وِرد يوم " + arabicDate(dateKey) + "… " + toArabicDigits(recs.length) +
-           " آية نزلت على القلب حرفًا حرفًا. إن نفعك هذا التدبّر… فاشترك في القناة وفعّل الجرس، فغدًا — بإذن الله — وِردٌ جديد. تقبّل الله منا ومنكم صالح الأعمال.»");
+           " " + ayahWord(recs.length) + " نزلت على القلب حرفًا حرفًا. إن نفعك هذا التدبّر… فاشترك في القناة وفعّل الجرس، فغدًا — بإذن الله — وِردٌ جديد. تقبّل الله منا ومنكم صالح الأعمال.»");
     L.push("");
     L.push("**[B-ROLL]:**");
     L.push("1. `Candle flame gently fading to embers, dark royal background, slow motion`");
@@ -330,10 +331,10 @@
     L.push("## 📋 جاهز للصق في وصف الفيديو");
     L.push("");
     L.push("**العنوان المقترح:** وِرد اليوم " + arabicDate(dateKey) + " — تدبّر " + toArabicDigits(recs.length) +
-           " آية بحساب الجُمَّل 🕯️");
+           " " + ayahWord(recs.length) + " بحساب الجُمَّل 🕯️");
     L.push("");
     L.push("**أول سطرين من الوصف:** في يوم " + arabicDate(dateKey) + " تُليت " + toArabicDigits(recs.length) +
-           " آيات من كتاب الله وسُجِّلت بوقتها… نتدبّرها ونفكّ شيفرة كلماتها بحساب الجُمَّل.");
+           " " + ayahWord(recs.length) + " من كتاب الله وسُجِّلت بوقتها… نتدبّرها ونفكّ شيفرة كلماتها بحساب الجُمَّل.");
     L.push("");
     L.push("```");
     chapters.forEach(function (c) { L.push(c.time + " " + c.title); });
