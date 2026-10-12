@@ -206,6 +206,48 @@ button { cursor: pointer; }
 }
 .ayah-row .atext { font-family: "Amiri", "Scheherazade New", serif; font-size: 1.3rem; line-height: 2; }
 
+/* Surah strip dial + ayah wheel */
+.surah-strip {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  margin-top: 0.5rem; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel); scrollbar-width: none;
+}
+.surah-strip::-webkit-scrollbar { display: none; }
+.surah-chip {
+  min-width: 52px; width: 52px; height: 48px; flex: 0 0 52px;
+  display: flex; align-items: center; justify-content: center;
+  scroll-snap-align: center; cursor: pointer;
+  color: var(--muted); font-weight: 600; font-size: 0.95rem;
+  border-right: 1px solid var(--border);
+}
+.surah-chip.active { color: #06210f; background: var(--accent); font-weight: 800; }
+
+.dial-wrap { position: relative; height: 220px; margin-top: 0.5rem; }
+.dial {
+  height: 100%; overflow-y: auto; scroll-snap-type: y mandatory;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--panel);
+  scrollbar-width: none;
+}
+.dial::-webkit-scrollbar { display: none; }
+.dial-pad { height: 44px; }
+.dial-row {
+  height: 44px; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  scroll-snap-align: center; cursor: pointer; color: var(--muted);
+}
+.dial-row .dn { font-size: 1.05rem; font-weight: 700; }
+.dial-row .dg { font-size: 0.72rem; opacity: 0.7; }
+.dial-row.active { color: var(--text); }
+.dial-row.active .dn { color: var(--accent); font-size: 1.35rem; }
+.dial-band {
+  position: absolute; top: 50%; left: 0; right: 0; height: 44px;
+  transform: translateY(-50%); pointer-events: none; z-index: 2;
+  border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  background: rgba(74, 222, 128, 0.06);
+}
+.dial-fade { position: absolute; left: 0; right: 0; height: 60px; pointer-events: none; z-index: 3; }
+.dial-fade.top { top: 0; border-radius: 10px 10px 0 0; background: linear-gradient(#1a2230, transparent); }
+.dial-fade.bottom { bottom: 0; border-radius: 0 0 10px 10px; background: linear-gradient(transparent, #1a2230); }
+
 /* Number-words chips */
 .word-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
 .word-chip {

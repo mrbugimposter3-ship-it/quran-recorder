@@ -24,13 +24,20 @@
     <div class="recorder-grid">
       <div class="card">
         <h2>Selection</h2>
-        <label>Surah</label>
+        <label>Surah <span class="muted">— swipe the dial</span></label>
         <select id="rec-surah"></select>
-        <label>Ayah <span id="rec-ayah-max" class="muted"></span></label>
+        <div id="surah-strip" class="surah-strip" dir="ltr"></div>
+        <label>Ayah <span id="rec-ayah-max" class="muted"></span> <span class="muted">— spin the wheel</span></label>
         <div class="ayah-picker">
           <button id="ayah-prev" title="Previous ayah">−</button>
           <input id="rec-ayah" type="number" min="1" value="1">
           <button id="ayah-next" title="Next ayah">+</button>
+        </div>
+        <div class="dial-wrap">
+          <div class="dial-fade top"></div>
+          <div class="dial-band"></div>
+          <div class="dial-fade bottom"></div>
+          <div id="ayah-dial" class="dial"></div>
         </div>
         <label>Verse # (1–6236)</label>
         <div class="ayah-picker">

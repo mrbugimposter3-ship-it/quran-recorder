@@ -143,6 +143,8 @@ function refreshSelection() {
   recVerseInput.value = gv;
   $("#rec-ayah-text").textContent = ayahText(selectedSurah, selectedAyah);
   renderWordMap();
+  syncSurahStrip();
+  syncAyahDial();
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
 }
@@ -159,6 +161,114 @@ recAyahInput.addEventListener("change", () => {
 });
 $("#ayah-prev").addEventListener("click", () => { selectedAyah--; refreshSelection(); });
 $("#ayah-next").addEventListener("click", () => { selectedAyah++; refreshSelection(); });
+
+/* --- surah strip dial (swipe 1–114) --- */
+
+const STRIP_W = 52;
+let stripBuilt = false;
+let stripLock = false;
+
+function buildSurahStrip() {
+  if (stripBuilt) return;
+  stripBuilt = true;
+  const strip = $("#surah-strip");
+  for (let n = 1; n <= 114; n++) {
+    const c = document.createElement("div");
+    c.className = "surah-chip";
+    c.textContent = n;
+    c.dataset.n = n;
+    c.addEventListener("click", () => selectSurah(n));
+    strip.appendChild(c);
+  }
+  strip.addEventListener("scroll", () => {
+    if (stripLock) return;
+    clearTimeout(strip._t);
+    strip._t = setTimeout(() => {
+      const idx = Math.round((strip.scrollLeft + strip.clientWidth / 2) / STRIP_W - 0.5);
+      const n = Math.min(Math.max(1, idx + 1), 114);
+      if (n !== selectedSurah) selectSurah(n);
+    }, 90);
+  });
+}
+
+function syncSurahStrip() {
+  if (!stripBuilt) return;
+  const strip = $("#surah-strip");
+  strip.querySelectorAll(".surah-chip").forEach((c) =>
+    c.classList.toggle("active", Number(c.dataset.n) === selectedSurah));
+  const chip = strip.querySelector(".surah-chip.active");
+  if (chip) {
+    stripLock = true;
+    chip.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    clearTimeout(strip._lt);
+    strip._lt = setTimeout(() => { stripLock = false; }, 350);
+  }
+}
+
+/* --- ayah wheel dial (spin to the exact ayah) --- */
+
+const DIAL_ROW = 44, DIAL_PAD = 2;
+let dialFor = 0;
+let dialLock = false;
+
+function buildAyahDial() {
+  const s = surahByNum(selectedSurah);
+  if (dialFor === selectedSurah) return;
+  dialFor = selectedSurah;
+  const dial = $("#ayah-dial");
+  dial.innerHTML = "";
+  for (let i = 0; i < DIAL_PAD; i++) {
+    const p = document.createElement("div");
+    p.className = "dial-pad";
+    dial.appendChild(p);
+  }
+  for (let a = 1; a <= s.ayahs; a++) {
+    const r = document.createElement("div");
+    r.className = "dial-row";
+    r.dataset.a = a;
+    const dn = document.createElement("span");
+    dn.className = "dn";
+    dn.textContent = a;
+    const dg = document.createElement("span");
+    dg.className = "dg";
+    dg.textContent = "verse " + (s.start + a - 1);
+    r.appendChild(dn);
+    r.appendChild(dg);
+    r.addEventListener("click", () => { selectedAyah = a; refreshSelection(); });
+    dial.appendChild(r);
+  }
+  for (let i = 0; i < DIAL_PAD; i++) {
+    const p = document.createElement("div");
+    p.className = "dial-pad";
+    dial.appendChild(p);
+  }
+}
+
+function syncAyahDial() {
+  buildAyahDial();
+  const dial = $("#ayah-dial");
+  dial.querySelectorAll(".dial-row").forEach((r) =>
+    r.classList.toggle("active", Number(r.dataset.a) === selectedAyah));
+  const target = (DIAL_PAD + selectedAyah - 1) * DIAL_ROW + DIAL_ROW / 2 - dial.clientHeight / 2;
+  dialLock = true;
+  dial.scrollTo({ top: target, behavior: "smooth" });
+  clearTimeout(dial._lt);
+  dial._lt = setTimeout(() => { dialLock = false; }, 350);
+}
+
+function initAyahDialScroll() {
+  const dial = $("#ayah-dial");
+  dial.addEventListener("scroll", () => {
+    if (dialLock) return;
+    clearTimeout(dial._t);
+    dial._t = setTimeout(() => {
+      const max = surahByNum(selectedSurah).ayahs;
+      const rowIdx = Math.round((dial.scrollTop + dial.clientHeight / 2) / DIAL_ROW - 0.5) - DIAL_PAD;
+      const a = Math.min(Math.max(1, rowIdx + 1), max);
+      if (a !== selectedAyah) { selectedAyah = a; refreshSelection(); }
+    }, 80);
+  });
+}
 
 /* --- global verse # selector (1–6236) --- */
 
@@ -759,6 +869,8 @@ $("#log-push").addEventListener("click", () => {
 (async function init() {
   await idb.open();
   buildFinder();
+  buildSurahStrip();
+  initAyahDialScroll();
   refreshSelection();
   highlightFinderRow();
   renderKalima();
