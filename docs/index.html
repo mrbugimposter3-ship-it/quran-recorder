@@ -41,6 +41,8 @@
         <div class="verse-badge">
           Global verse <strong id="rec-global">1</strong> / 6236
         </div>
+        <div id="rec-ayah-text" class="ayah-text" dir="rtl"></div>
+        <button id="btn-stamp" class="stamp-ayah">⏱ Timestamp this ayah (no recording)</button>
         <div id="rec-surah-info" class="muted"></div>
       </div>
 
@@ -71,20 +73,35 @@
           <button id="finder-go">Find</button>
         </div>
       </div>
+      <div class="finder-row" style="margin-top:0.6rem">
+        <input id="finder-text" type="search" dir="rtl" placeholder="🔍 ابحث في نص الآيات… (search inside ayah text)">
+      </div>
       <div id="finder-result" class="muted"></div>
     </div>
+    <div id="search-results" class="search-results"></div>
     <div id="surah-scroll" class="surah-scroll"></div>
+    <div id="ayah-browser" class="card ayah-browser hidden">
+      <h2 id="ayah-browser-title"></h2>
+      <div id="ayah-list" class="ayah-list" dir="rtl"></div>
+    </div>
   </section>
 
   <!-- ============ KALIMA ============ -->
   <section id="tab-kalima" class="panel">
     <div class="card">
-      <h2>Kalima Sequence</h2>
+      <h2>Kalima Patterns</h2>
       <p class="muted">
-        A complete kalima is the set <strong>1 · 6 · 8 · 10 · 12 · 23 · 24 · 27</strong>.
-        Pick which surah counts as <strong>surah 1</strong> — the whole sequence shifts by that offset (wrapping around 114).
+        Patterns produce <strong>surahs only</strong> (1–114). A complete kalima is the set
+        <strong>1 · 6 · 8 · 10 · 12 · 23 · 24 · 27</strong>; Fibonacci is
+        <strong>1 · 2 · 3 · 5 · 8 · 13 · 21 · 34 · 55 · 89</strong>.
+        Pick which surah counts as <strong>surah 1</strong> — the pattern shifts by that offset (wrapping around 114).
       </p>
       <div class="kalima-controls">
+        <label>Pattern:</label>
+        <select id="kalima-pattern">
+          <option value="kalima">Kalima — 1·6·8·10·12·23·24·27</option>
+          <option value="fibonacci">Fibonacci — 1·2·3·5·8·13·21·34·55·89</option>
+        </select>
         <label>Surah 1 is:</label>
         <select id="kalima-offset"></select>
         <div class="presets">
@@ -98,7 +115,7 @@
       <div id="kalima-progress" class="progress"><div id="kalima-progress-bar"></div></div>
       <div id="kalima-status" class="muted"></div>
       <table class="kalima-table">
-        <thead><tr><th>Kalima</th><th>Surah #</th><th>Surah</th><th>Ayahs</th><th>Stamp</th></tr></thead>
+        <thead><tr><th>Position</th><th>Surah #</th><th>Surah</th><th>Ayahs</th><th>Stamp</th></tr></thead>
         <tbody id="kalima-body"></tbody>
       </table>
     </div>

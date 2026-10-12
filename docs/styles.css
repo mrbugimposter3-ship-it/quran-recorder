@@ -170,6 +170,41 @@ button { cursor: pointer; }
 .badge.recitation { border-color: var(--accent); color: var(--accent); }
 .badge.kalima { border-color: var(--accent2); color: var(--accent2); }
 .badge.kalima-complete { border-color: gold; color: gold; }
+.badge.ayah-stamp { border-color: #c084fc; color: #c084fc; }
+
+/* Ayah preview + exact-ayah browser */
+.ayah-text {
+  margin-top: 0.8rem;
+  font-family: "Amiri", "Scheherazade New", "Traditional Arabic", serif;
+  font-size: 1.45rem; line-height: 2.1;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.6rem 0.9rem;
+  min-height: 3rem;
+}
+.stamp-ayah {
+  margin-top: 0.6rem; width: 100%;
+  background: var(--accent2); color: #08222f; border: none;
+  border-radius: 10px; padding: 0.7rem; font-weight: 600; font-size: 0.95rem;
+}
+.search-results { margin-bottom: 1rem; }
+.search-row, .ayah-row {
+  display: flex; gap: 0.8rem; align-items: baseline;
+  padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border);
+  cursor: pointer; background: var(--panel);
+}
+.search-row:first-child { border-radius: 12px 12px 0 0; }
+.search-row:last-child { border-radius: 0 0 12px 12px; }
+.search-row:hover, .ayah-row:hover { background: #26334a; }
+.search-row .loc { min-width: 7rem; color: var(--accent2); font-weight: 600; white-space: nowrap; }
+.search-row .atext { font-family: "Amiri", "Scheherazade New", serif; font-size: 1.15rem; }
+.ayah-browser .ayah-list { max-height: 55vh; overflow-y: auto; }
+.ayah-row { background: transparent; }
+.ayah-row.selected { background: #123b2a; border-right: 4px solid var(--accent); }
+.ayah-row .anum {
+  min-width: 2.2rem; text-align: center; color: var(--accent2); font-weight: 700;
+  border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.3rem;
+}
+.ayah-row .atext { font-family: "Amiri", "Scheherazade New", serif; font-size: 1.3rem; line-height: 2; }
 
 /* GitHub sync */
 .gh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }

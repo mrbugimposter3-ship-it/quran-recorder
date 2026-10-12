@@ -40,8 +40,8 @@ if (!fs.existsSync(logPath)) {
 const log = JSON.parse(fs.readFileSync(logPath, "utf8"));
 const entries = log.entries || [];
 
-if (!entries.some((e) => e.type === "recitation")) {
-  console.log(`Log for ${dateKey} has no recitations — skipping script.`);
+if (!entries.some((e) => e.type === "recitation" || e.type === "ayah-stamp")) {
+  console.log(`Log for ${dateKey} has no recitations or ayah timestamps — skipping script.`);
   process.exit(0);
 }
 
@@ -50,4 +50,4 @@ const outDir = path.join(__dirname, "..", "scripts");
 fs.mkdirSync(outDir, { recursive: true });
 const outPath = path.join(outDir, `${dateKey}.md`);
 fs.writeFileSync(outPath, md, "utf8");
-console.log(`✓ Wrote scripts/${dateKey}.md (${md.length} chars, ${entries.filter((e) => e.type === "recitation").length} ayahs)`);
+console.log(`✓ Wrote scripts/${dateKey}.md (${md.length} chars, ${entries.filter((e) => e.type === "recitation" || e.type === "ayah-stamp").length} ayahs)`);

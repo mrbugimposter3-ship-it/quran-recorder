@@ -61,9 +61,11 @@
     return s ? s.ar : String(n);
   }
 
+  var PATTERN_AR = { kalima: "الكلمة", fibonacci: "فيبوناتشي" };
+
   /* entries: log entries for one day (array). Returns markdown string. */
   function buildArabicScript(dateKey, entries) {
-    var recs = entries.filter(function (e) { return e.type === "recitation"; })
+    var recs = entries.filter(function (e) { return e.type === "recitation" || e.type === "ayah-stamp"; })
                       .sort(function (a, b) { return a.global - b.global || a.ts.localeCompare(b.ts); });
     var kalimaStamps = entries.filter(function (e) { return e.type === "kalima"; })
                               .sort(function (a, b) { return a.position - b.position; });
@@ -77,8 +79,11 @@
 
     var totalWords = 0;
     recs.forEach(function (e) { totalWords += wordCount(ayahText(e.surah, e.ayah)); });
+    var recCount = recs.filter(function (e) { return e.type === "recitation"; }).length;
+    var stampCount = recs.length - recCount;
 
-    L.push("**عدد الآيات المُسجَّلة:** " + toArabicDigits(recs.length) +
+    L.push("**التلاوات المُسجَّلة:** " + toArabicDigits(recCount) +
+           "  ·  **آيات مختومة بالوقت:** " + toArabicDigits(stampCount) +
            "  ·  **عدد الكلمات:** " + toArabicDigits(totalWords));
     L.push("");
     L.push("---");
@@ -97,30 +102,48 @@
       L.push("");
       L.push(text + " ﴿" + toArabicDigits(e.ayah) + "﴾");
       L.push("");
-      L.push("> 🎙 سُجِّلت الساعة " + arabicTime(e.ts) +
-             "  ·  المدة: " + arabicDuration(e.durationMs) +
-             "  ·  الكلمات: " + toArabicDigits(wordCount(text)));
+      if (e.type === "recitation") {
+        L.push("> 🎙 سُجِّلت الساعة " + arabicTime(e.ts) +
+               "  ·  المدة: " + arabicDuration(e.durationMs) +
+               "  ·  الكلمات: " + toArabicDigits(wordCount(text)));
+      } else {
+        L.push("> ⏱ خُتِمت بالوقت الساعة " + arabicTime(e.ts) +
+               "  ·  الكلمات: " + toArabicDigits(wordCount(text)));
+      }
       L.push("");
     });
 
     if (kalimaStamps.length || kalimaDone.length) {
-      L.push("---");
-      L.push("");
-      var offset = (kalimaStamps[0] && kalimaStamps[0].offset) ||
-                   (kalimaDone[0] && kalimaDone[0].offset) || 1;
-      L.push("## 🕋 الكلمة — الإزاحة: السورة ١ = سورة " + surahName(offset) + " " + toArabicDigits(offset));
-      L.push("");
+      // Group by pattern (kalima / fibonacci / …), surahs only (1–114)
+      var groups = {};
       kalimaStamps.forEach(function (e) {
-        L.push("- الموضع " + toArabicDigits(e.position) +
-               " ← سورة " + surahName(e.surah) + " " + toArabicDigits(e.surah) +
-               "  ·  ⏱ " + arabicTime(e.ts));
+        var p = e.pattern || "kalima";
+        (groups[p] = groups[p] || { stamps: [], done: [] }).stamps.push(e);
       });
       kalimaDone.forEach(function (e) {
-        L.push("");
-        L.push("✨ **اكتملت الكلمة كاملة** الساعة " + arabicTime(e.ts) +
-               " — التسلسل: " + e.sequence.map(toArabicDigits).join(" · "));
+        var p = e.pattern || "kalima";
+        (groups[p] = groups[p] || { stamps: [], done: [] }).done.push(e);
       });
-      L.push("");
+      Object.keys(groups).forEach(function (p) {
+        var g = groups[p];
+        var offset = (g.stamps[0] && g.stamps[0].offset) || (g.done[0] && g.done[0].offset) || 1;
+        L.push("---");
+        L.push("");
+        L.push("## 🕋 نمط " + (PATTERN_AR[p] || p) +
+               " — الإزاحة: السورة ١ = سورة " + surahName(offset) + " " + toArabicDigits(offset));
+        L.push("");
+        g.stamps.forEach(function (e) {
+          L.push("- الموضع " + toArabicDigits(e.position) +
+                 " ← سورة " + surahName(e.surah) + " " + toArabicDigits(e.surah) +
+                 "  ·  ⏱ " + arabicTime(e.ts));
+        });
+        g.done.forEach(function (e) {
+          L.push("");
+          L.push("✨ **اكتمل النمط كاملًا** الساعة " + arabicTime(e.ts) +
+                 " — التسلسل: " + e.sequence.map(toArabicDigits).join(" · "));
+        });
+        L.push("");
+      });
     }
 
     L.push("---");

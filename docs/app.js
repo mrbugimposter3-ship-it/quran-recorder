@@ -7,9 +7,13 @@
 "use strict";
 
 const $ = (sel) => document.querySelector(sel);
-const KALIMA_BASE = [1, 6, 8, 10, 12, 23, 24, 27];
+const PATTERNS = {
+  kalima: [1, 6, 8, 10, 12, 23, 24, 27],
+  fibonacci: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+};
 const LOG_KEY = "quranRecorder.logs.v1";
 const KALIMA_OFFSET_KEY = "quranRecorder.kalimaOffset";
+const KALIMA_PATTERN_KEY = "quranRecorder.kalimaPattern";
 const GH_KEY = "quranRecorder.gh.v1";
 
 console.assert(TOTAL_VERSES === 6236, "Surah ayah counts must total 6236, got " + TOTAL_VERSES);
@@ -89,6 +93,19 @@ function findByGlobalVerse(v) {
   }
   return null;
 }
+function ayahText(surahNum, ayah) {
+  const arr = (window.QURAN_TEXT || {})[String(surahNum)];
+  return (arr && arr[ayah - 1]) || "";
+}
+
+/* Arabic text normalization for searching (strip diacritics, unify letters) */
+function normalizeArabic(s) {
+  return s
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, "")
+    .replace(/[\u0623\u0625\u0622\u0671]/g, "\u0627")
+    .replace(/\u0649/g, "\u064A")
+    .replace(/\u0629/g, "\u0647");
+}
 
 /* ---------------- tabs ---------------- */
 
@@ -124,6 +141,7 @@ function refreshSelection() {
   const gv = globalVerse(selectedSurah, selectedAyah);
   $("#rec-global").textContent = gv;
   recVerseInput.value = gv;
+  $("#rec-ayah-text").textContent = ayahText(selectedSurah, selectedAyah);
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
 }
@@ -157,6 +175,31 @@ recVerseInput.addEventListener("change", () => selectGlobalVerse(Number(recVerse
 recVerseInput.addEventListener("keydown", (e) => { if (e.key === "Enter") selectGlobalVerse(Number(recVerseInput.value)); });
 $("#verse-prev").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) - 1));
 $("#verse-next").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) + 1));
+
+/* --- ⏱ timestamp an ayah (1–6236) without recording --- */
+
+$("#btn-stamp").addEventListener("click", () => {
+  const gv = globalVerse(selectedSurah, selectedAyah);
+  const s = surahByNum(selectedSurah);
+  addLogEntry({
+    id: uid(),
+    type: "ayah-stamp",
+    ts: new Date().toISOString(),
+    surah: selectedSurah,
+    ayah: selectedAyah,
+    global: gv
+  });
+  $("#rec-status").textContent =
+    `⏱ Timestamped ✓ verse ${gv} — ${s.name} ${selectedSurah}:${selectedAyah} at ${timeStr(new Date().toISOString())}`;
+  renderLog();
+  maybeAutoPush();
+});
+
+function maybeAutoPush() {
+  if (ghSettings().autopush && ghSettings().token) {
+    pushDayToGitHub(dayKey()).catch((err) => ghStatus("Auto-push failed: " + err.message, false));
+  }
+}
 
 /* --- MediaRecorder --- */
 
@@ -221,11 +264,7 @@ async function onRecordingStopped() {
   st.textContent = `Saved ✓ ${surahByNum(selectedSurah).name} ${selectedSurah}:${selectedAyah} (${fmtDur(duration)})`;
   st.classList.remove("recording");
   renderRecordings();
-
-  // Auto-push the day's log to GitHub if enabled
-  if (ghSettings().autopush && ghSettings().token) {
-    pushDayToGitHub(dayKey()).catch((err) => ghStatus("Auto-push failed: " + err.message, false));
-  }
+  maybeAutoPush();
 }
 
 /* --- recordings list (per day) --- */
@@ -302,7 +341,89 @@ function selectSurah(n, ayah = 1) {
   const s = surahByNum(n);
   $("#finder-result").textContent =
     `Selected ${surahLabel(s)} — ayahs 1–${s.ayahs}, global verses ${s.start}–${s.end}.`;
+  renderAyahBrowser(n);
 }
+
+/* --- exact-ayah browser: every ayah of the surah with its Arabic text --- */
+
+function renderAyahBrowser(n) {
+  const s = surahByNum(n);
+  $("#ayah-browser").classList.remove("hidden");
+  $("#ayah-browser-title").textContent = `${surahLabel(s)} — tap the exact ayah`;
+  const list = $("#ayah-list");
+  list.innerHTML = "";
+  const texts = (window.QURAN_TEXT || {})[String(n)] || [];
+  texts.forEach((t, i) => {
+    const row = document.createElement("div");
+    row.className = "ayah-row" + (n === selectedSurah && i + 1 === selectedAyah ? " selected" : "");
+    const num = document.createElement("span");
+    num.className = "anum";
+    num.textContent = i + 1;
+    const txt = document.createElement("span");
+    txt.className = "atext";
+    txt.textContent = t;
+    row.appendChild(num);
+    row.appendChild(txt);
+    row.addEventListener("click", () => {
+      selectSurah(n, i + 1);
+      renderAyahBrowser(n);
+    });
+    list.appendChild(row);
+  });
+  const sel = list.querySelector(".ayah-row.selected");
+  if (sel) sel.scrollIntoView({ block: "center" });
+}
+
+/* --- full-text search across all 6236 ayahs (Arabic, diacritic-insensitive) --- */
+
+let normIndex = null;
+function buildNormIndex() {
+  if (normIndex) return normIndex;
+  normIndex = [];
+  for (const s of SURAHS) {
+    const texts = (window.QURAN_TEXT || {})[String(s.n)] || [];
+    texts.forEach((t, i) => normIndex.push({ s: s.n, a: i + 1, norm: normalizeArabic(t), text: t }));
+  }
+  return normIndex;
+}
+
+$("#finder-text").addEventListener("input", (e) => {
+  const box = $("#search-results");
+  const q = normalizeArabic(e.target.value.trim());
+  if (q.length < 2) { box.innerHTML = ""; return; }
+  const hits = [];
+  for (const item of buildNormIndex()) {
+    if (item.norm.includes(q)) {
+      hits.push(item);
+      if (hits.length >= 40) break;
+    }
+  }
+  box.innerHTML = "";
+  if (!hits.length) {
+    box.innerHTML = `<p class="muted" style="padding:0.4rem">لا نتائج — no matching ayahs.</p>`;
+    return;
+  }
+  for (const h of hits) {
+    const s = surahByNum(h.s);
+    const row = document.createElement("div");
+    row.className = "search-row";
+    const loc = document.createElement("span");
+    loc.className = "loc";
+    loc.textContent = `${s.name} ${h.s}:${h.a}`;
+    const txt = document.createElement("span");
+    txt.className = "atext";
+    txt.dir = "rtl";
+    txt.textContent = h.text.length > 120 ? h.text.slice(0, 120) + "…" : h.text;
+    row.appendChild(loc);
+    row.appendChild(txt);
+    row.addEventListener("click", () => {
+      selectSurah(h.s, h.a);
+      $("#finder-result").textContent =
+        `Found: ${surahLabel(s)}, ayah ${h.a} — global verse ${s.start + h.a - 1}.`;
+    });
+    box.appendChild(row);
+  }
+});
 
 $("#finder-search").addEventListener("input", (e) => {
   const q = e.target.value.trim().toLowerCase();
@@ -329,29 +450,39 @@ function jumpToVerse() {
     `Verse ${v} → ${surahLabel(hit.surah)}, ayah ${hit.ayah} of ${hit.surah.ayahs}.`;
 }
 
-/* ---------------- kalima tab ---------------- */
+/* ---------------- kalima / patterns tab ---------------- */
 
 const kalimaOffsetSel = $("#kalima-offset");
+const kalimaPatternSel = $("#kalima-pattern");
 fillSurahSelect(kalimaOffsetSel);
 kalimaOffsetSel.value = localStorage.getItem(KALIMA_OFFSET_KEY) || "27";
+kalimaPatternSel.value = localStorage.getItem(KALIMA_PATTERN_KEY) || "kalima";
 
 function kalimaOffset() { return Number(kalimaOffsetSel.value) || 1; }
+function kalimaPattern() { return PATTERNS[kalimaPatternSel.value] ? kalimaPatternSel.value : "kalima"; }
+function patternPositions() { return PATTERNS[kalimaPattern()]; }
+/* Patterns produce surahs only: every position maps into 1–114. */
 function kalimaMap(k) { return ((kalimaOffset() - 1 + (k - 1)) % 114) + 1; }
 
 function kalimaStampsToday() {
   const logs = loadLogs();
-  return (logs[dayKey()] || []).filter((e) => e.type === "kalima" && e.offset === kalimaOffset());
+  const pat = kalimaPattern();
+  return (logs[dayKey()] || []).filter((e) =>
+    e.type === "kalima" && e.offset === kalimaOffset() && (e.pattern || "kalima") === pat);
 }
 
 function renderKalima() {
   const off = kalimaOffset();
+  const pat = kalimaPattern();
   localStorage.setItem(KALIMA_OFFSET_KEY, String(off));
+  localStorage.setItem(KALIMA_PATTERN_KEY, pat);
   const stamps = kalimaStampsToday();
   const stampedPositions = new Set(stamps.map((s) => s.position));
+  const positions = patternPositions();
 
   const body = $("#kalima-body");
   body.innerHTML = "";
-  KALIMA_BASE.forEach((k) => {
+  positions.forEach((k) => {
     const sn = kalimaMap(k);
     const s = surahByNum(sn);
     const stamp = stamps.find((x) => x.position === k);
@@ -370,40 +501,44 @@ function renderKalima() {
       addLogEntry({
         id: uid(),
         type: "kalima",
+        pattern: pat,
         ts: new Date().toISOString(),
         offset: off,
         position: k,
         surah: sn
       });
-      // Check completion: all 8 positions stamped today for this offset
+      // Check completion: every pattern position stamped today for this offset
       const after = kalimaStampsToday();
       const done = new Set(after.map((x) => x.position));
       const alreadyLogged = (loadLogs()[dayKey()] || []).some(
-        (e) => e.type === "kalima-complete" && e.offset === off);
-      if (done.size === KALIMA_BASE.length && !alreadyLogged) {
+        (e) => e.type === "kalima-complete" && e.offset === off && (e.pattern || "kalima") === pat);
+      if (done.size === positions.length && !alreadyLogged) {
         addLogEntry({
           id: uid(),
           type: "kalima-complete",
+          pattern: pat,
           ts: new Date().toISOString(),
           offset: off,
-          sequence: KALIMA_BASE.map(kalimaMap)
+          sequence: positions.map(kalimaMap)
         });
       }
       renderKalima();
+      maybeAutoPush();
     });
     body.appendChild(tr);
   });
 
   const count = stampedPositions.size;
-  $("#kalima-progress-bar").style.width = `${(count / KALIMA_BASE.length) * 100}%`;
+  $("#kalima-progress-bar").style.width = `${(count / positions.length) * 100}%`;
   $("#kalima-status").textContent =
-    `Offset: surah 1 = ${surahLabel(surahByNum(off))} · Sequence: ` +
-    KALIMA_BASE.map(kalimaMap).join(" · ") +
-    ` · ${count}/${KALIMA_BASE.length} stamped today` +
-    (count === KALIMA_BASE.length ? " — ✨ Complete kalima!" : "");
+    `Pattern: ${pat} · Offset: surah 1 = ${surahLabel(surahByNum(off))} · Sequence: ` +
+    positions.map(kalimaMap).join(" · ") +
+    ` · ${count}/${positions.length} stamped today` +
+    (count === positions.length ? " — ✨ Pattern complete!" : "");
 }
 
 kalimaOffsetSel.addEventListener("change", renderKalima);
+kalimaPatternSel.addEventListener("change", renderKalima);
 document.querySelectorAll(".preset").forEach((b) =>
   b.addEventListener("click", () => { kalimaOffsetSel.value = b.dataset.off; renderKalima(); }));
 
@@ -413,16 +548,22 @@ $("#log-date").value = dayKey();
 $("#log-date").addEventListener("change", renderLog);
 
 function describeEntry(e) {
+  if (e.type === "ayah-stamp") {
+    const s = surahByNum(e.surah);
+    return `⏱ Timestamped <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global})`;
+  }
   if (e.type === "recitation") {
     const s = surahByNum(e.surah);
     return `Recorded <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global}) — ${fmtDur(e.durationMs || 0)}`;
   }
   if (e.type === "kalima") {
     const s = surahByNum(e.surah);
-    return `Kalima stamp — position ${e.position} → <strong>${s.n}. ${s.name}</strong> (offset: surah 1 = ${e.offset})`;
+    const pat = e.pattern || "kalima";
+    return `${pat === "fibonacci" ? "Fibonacci" : "Kalima"} stamp — position ${e.position} → <strong>${s.n}. ${s.name}</strong> (offset: surah 1 = ${e.offset})`;
   }
   if (e.type === "kalima-complete") {
-    return `✨ Complete kalima finished (offset: surah 1 = ${e.offset}) — sequence ${e.sequence.join(" · ")}`;
+    const pat = e.pattern || "kalima";
+    return `✨ Complete ${pat} finished (offset: surah 1 = ${e.offset}) — sequence ${e.sequence.join(" · ")}`;
   }
   return e.type;
 }
@@ -433,10 +574,11 @@ function renderLog() {
   const items = logs[key] || [];
   const box = $("#log-entries");
   const recs = items.filter((e) => e.type === "recitation").length;
+  const ayahStamps = items.filter((e) => e.type === "ayah-stamp").length;
   const stamps = items.filter((e) => e.type === "kalima").length;
   const completes = items.filter((e) => e.type === "kalima-complete").length;
   $("#log-stats").textContent =
-    `${items.length} entries · ${recs} recitations · ${stamps} kalima stamps · ${completes} complete kalimas`;
+    `${items.length} entries · ${recs} recitations · ${ayahStamps} ayah timestamps · ${stamps} pattern stamps · ${completes} complete patterns`;
   if (!items.length) {
     box.innerHTML = `<p class="muted">No entries for ${key}.</p>`;
     return;
