@@ -38,6 +38,7 @@ const WORD_TRANSLATIONS = {
   "there": "هناك",
   "these": "هؤلاء",
   "this": "هذا",
+  "time": "وقت",
   "us": "نحن",
   "use": "استخدام",
   "video": "فيديو",
