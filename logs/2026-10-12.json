@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-12",
+  "exportedAt": "2026-10-12T21:00:00.000Z",
+  "entries": [
+    { "id": "demo1", "type": "recitation", "ts": "2026-10-12T17:15:00.000Z", "surah": 112, "ayah": 1, "global": 6222, "durationMs": 5000, "mime": "audio/webm" },
+    { "id": "demo2", "type": "ayah-stamp", "ts": "2026-10-12T23:45:00.000Z", "surah": 1, "ayah": 1, "global": 1 },
+    { "id": "demo3", "type": "recitation", "ts": "2026-10-12T14:20:00.000Z", "surah": 55, "ayah": 13, "global": 4919, "durationMs": 12000, "mime": "audio/webm" },
+    { "id": "demo4", "type": "kalima-complete", "pattern": "kalima", "ts": "2026-10-12T23:30:00.000Z", "offset": 27, "sequence": [27, 32, 34, 36, 38, 49, 50, 53] }
+  ]
+}

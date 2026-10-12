@@ -6,7 +6,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { buildArabicScript } = require("../docs/script-builder.js");
+const { buildArabicScript, buildYouTubeScript } = require("../docs/script-builder.js");
 
 const TZ = "America/New_York";
 
@@ -50,4 +50,10 @@ const outDir = path.join(__dirname, "..", "scripts");
 fs.mkdirSync(outDir, { recursive: true });
 const outPath = path.join(outDir, `${dateKey}.md`);
 fs.writeFileSync(outPath, md, "utf8");
-console.log(`✓ Wrote scripts/${dateKey}.md (${md.length} chars, ${entries.filter((e) => e.type === "recitation" || e.type === "ayah-stamp").length} ayahs)`);
+console.log(`✓ Wrote scripts/${dateKey}.md (${md.length} chars)`);
+
+const yt = buildYouTubeScript(dateKey, entries);
+if (yt) {
+  fs.writeFileSync(path.join(outDir, `${dateKey}-youtube.md`), yt, "utf8");
+  console.log(`✓ Wrote scripts/${dateKey}-youtube.md (${yt.length} chars) — YouTube-ready`);
+}

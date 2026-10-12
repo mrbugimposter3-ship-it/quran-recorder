@@ -635,16 +635,25 @@ $("#log-export-all").addEventListener("click", () => {
 
 /* ---------------- Arabic script download ---------------- */
 
-$("#log-script").addEventListener("click", () => {
-  const key = $("#log-date").value || dayKey();
-  const entries = loadLogs()[key] || [];
-  const md = ScriptBuilder.buildArabicScript(key, entries);
+function downloadMd(md, filename) {
   const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `quran-script-${key}.md`;
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+$("#log-script").addEventListener("click", () => {
+  const key = $("#log-date").value || dayKey();
+  downloadMd(ScriptBuilder.buildArabicScript(key, loadLogs()[key] || []), `quran-script-${key}.md`);
+});
+
+$("#log-yt-script").addEventListener("click", () => {
+  const key = $("#log-date").value || dayKey();
+  const md = ScriptBuilder.buildYouTubeScript(key, loadLogs()[key] || []);
+  if (!md) { alert("No recitations or ayah timestamps for this day yet."); return; }
+  downloadMd(md, `quran-youtube-${key}.md`);
 });
 
 /* ---------------- GitHub sync ---------------- */
