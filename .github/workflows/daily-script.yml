@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Translate new number-words to Arabic
+        run: node tools/translate-words.js
+
       - name: Build Arabic script from today's log
         run: node tools/build-daily-script.js
 

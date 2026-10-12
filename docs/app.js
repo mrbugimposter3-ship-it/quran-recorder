@@ -142,6 +142,7 @@ function refreshSelection() {
   $("#rec-global").textContent = gv;
   recVerseInput.value = gv;
   $("#rec-ayah-text").textContent = ayahText(selectedSurah, selectedAyah);
+  renderWordMap();
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
 }
@@ -175,6 +176,30 @@ recVerseInput.addEventListener("change", () => selectGlobalVerse(Number(recVerse
 recVerseInput.addEventListener("keydown", (e) => { if (e.key === "Enter") selectGlobalVerse(Number(recVerseInput.value)); });
 $("#verse-prev").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) - 1));
 $("#verse-next").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) + 1));
+
+/* --- number-words chips for the selected ayah (letter-sum mod 28) --- */
+
+function renderWordMap() {
+  const box = $("#rec-word-map");
+  box.innerHTML = "";
+  if (typeof NUMBER_WORDS === "undefined") return;
+  const T = (typeof WORD_TRANSLATIONS !== "undefined") ? WORD_TRANSLATIONS : {};
+  for (const w of NUMBER_WORDS.words(selectedSurah, selectedAyah)) {
+    const sum = NUMBER_WORDS.val(w);
+    const en = NUMBER_WORDS.english(sum);
+    const chip = document.createElement("span");
+    chip.className = "word-chip";
+    chip.title = w + " = " + sum + " → bucket " + (sum % 28) + " → \"" + en + "\"" + (T[en] ? " → " + T[en] : "");
+    const word = document.createElement("span");
+    word.textContent = w + " ";
+    const cs = document.createElement("span");
+    cs.className = "cs";
+    cs.textContent = sum + "⇒" + (sum % 28);
+    chip.appendChild(word);
+    chip.appendChild(cs);
+    box.appendChild(chip);
+  }
+}
 
 /* --- ⏱ timestamp an ayah (1–6236) without recording --- */
 

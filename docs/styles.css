@@ -206,6 +206,16 @@ button { cursor: pointer; }
 }
 .ayah-row .atext { font-family: "Amiri", "Scheherazade New", serif; font-size: 1.3rem; line-height: 2; }
 
+/* Number-words chips */
+.word-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+.word-chip {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 999px;
+  padding: 0.15rem 0.6rem; font-family: "Amiri", "Scheherazade New", serif; font-size: 1rem;
+  cursor: default;
+}
+.word-chip .cs { color: var(--accent2); font-family: system-ui; font-size: 0.75rem; font-weight: 700; }
+.word-chip:hover { border-color: var(--accent2); }
+
 /* GitHub sync */
 .gh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
 .gh-wide { grid-column: 1 / -1; }

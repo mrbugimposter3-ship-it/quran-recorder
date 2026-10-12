@@ -7,11 +7,16 @@
 
 (function (root, factory) {
   if (typeof module === "object" && module.exports) {
-    module.exports = factory(require("./surah-data.js"), require("./quran-text.js"));
+    module.exports = factory(
+      require("./surah-data.js"),
+      require("./quran-text.js"),
+      require("./number-words.js"),
+      require("./word-translations.js")
+    );
   } else {
-    root.ScriptBuilder = factory(root.SURAHS, root.QURAN_TEXT);
+    root.ScriptBuilder = factory(root.SURAHS, root.QURAN_TEXT, root.NUMBER_WORDS, root.WORD_TRANSLATIONS);
   }
-})(typeof self !== "undefined" ? self : this, function (SURAHS, QURAN_TEXT) {
+})(typeof self !== "undefined" ? self : this, function (SURAHS, QURAN_TEXT, NUMBER_WORDS, WORD_TRANSLATIONS) {
   "use strict";
 
   var TZ = "America/New_York";
@@ -59,6 +64,32 @@
   function surahName(n) {
     var s = SURAHS[n - 1];
     return s ? s.ar : String(n);
+  }
+
+  /* Word-by-word analysis from the quran-number-words app:
+     each word's abjad-style letter-sum, its bucket (sum mod 28),
+     the mapped English word, and its Arabic translation. */
+  function wordTable(surah, ayah) {
+    if (!NUMBER_WORDS) return "";
+    var ws = NUMBER_WORDS.words(surah, ayah);
+    if (!ws.length) return "";
+    var T = WORD_TRANSLATIONS || {};
+    var rows = [
+      "**تحليل الكلمات — حساب الجُمَّل (٪ ٢٨):**",
+      "",
+      "| الكلمة | الجُمَّل | الحقيبة | English | بالعربية |",
+      "|---|---|---|---|---|"
+    ];
+    ws.forEach(function (w) {
+      var sum = NUMBER_WORDS.val(w);
+      var en = NUMBER_WORDS.english(sum);
+      var ar = T[en] || "—";
+      rows.push("| " + w + " | " + toArabicDigits(sum) +
+                " | " + toArabicDigits(NUMBER_WORDS.bucket(sum)) +
+                " | " + en + " | " + ar + " |");
+    });
+    rows.push("");
+    return rows.join("\n");
   }
 
   var PATTERN_AR = { kalima: "الكلمة", fibonacci: "فيبوناتشي" };
@@ -111,6 +142,7 @@
                "  ·  الكلمات: " + toArabicDigits(wordCount(text)));
       }
       L.push("");
+      L.push(wordTable(e.surah, e.ayah));
     });
 
     if (kalimaStamps.length || kalimaDone.length) {
