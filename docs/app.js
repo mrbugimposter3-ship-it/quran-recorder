@@ -10,6 +10,7 @@ const $ = (sel) => document.querySelector(sel);
 const KALIMA_BASE = [1, 6, 8, 10, 12, 23, 24, 27];
 const LOG_KEY = "quranRecorder.logs.v1";
 const KALIMA_OFFSET_KEY = "quranRecorder.kalimaOffset";
+const GH_KEY = "quranRecorder.gh.v1";
 
 console.assert(TOTAL_VERSES === 6236, "Surah ayah counts must total 6236, got " + TOTAL_VERSES);
 
@@ -220,6 +221,11 @@ async function onRecordingStopped() {
   st.textContent = `Saved ✓ ${surahByNum(selectedSurah).name} ${selectedSurah}:${selectedAyah} (${fmtDur(duration)})`;
   st.classList.remove("recording");
   renderRecordings();
+
+  // Auto-push the day's log to GitHub if enabled
+  if (ghSettings().autopush && ghSettings().token) {
+    pushDayToGitHub(dayKey()).catch((err) => ghStatus("Auto-push failed: " + err.message, false));
+  }
 }
 
 /* --- recordings list (per day) --- */
@@ -460,6 +466,118 @@ $("#log-export-all").addEventListener("click", () => {
   downloadJSON(loadLogs(), "quran-log-all.json");
 });
 
+/* ---------------- Arabic script download ---------------- */
+
+$("#log-script").addEventListener("click", () => {
+  const key = $("#log-date").value || dayKey();
+  const entries = loadLogs()[key] || [];
+  const md = ScriptBuilder.buildArabicScript(key, entries);
+  const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `quran-script-${key}.md`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ---------------- GitHub sync ---------------- */
+
+function ghSettings() {
+  try { return JSON.parse(localStorage.getItem(GH_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function ghStatus(msg, ok) {
+  const el = $("#gh-status");
+  el.textContent = msg;
+  el.className = ok ? "ok" : "err";
+}
+
+function loadGhForm() {
+  const s = ghSettings();
+  $("#gh-owner").value = s.owner || "mrbugimposter3-ship-it";
+  $("#gh-repo").value = s.repo || "quran-recorder";
+  $("#gh-token").value = s.token || "";
+  $("#gh-autopush").checked = !!s.autopush;
+  $("#gh-audio").checked = !!s.audio;
+}
+
+$("#gh-save").addEventListener("click", () => {
+  const s = {
+    owner: $("#gh-owner").value.trim(),
+    repo: $("#gh-repo").value.trim(),
+    token: $("#gh-token").value.trim(),
+    autopush: $("#gh-autopush").checked,
+    audio: $("#gh-audio").checked
+  };
+  localStorage.setItem(GH_KEY, JSON.stringify(s));
+  ghStatus("Settings saved in this browser ✓", true);
+});
+
+function utf8ToB64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function blobToB64(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(",")[1]);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+async function ghPutFile(s, path, base64Content, message) {
+  const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${path}`;
+  const headers = {
+    Authorization: `Bearer ${s.token}`,
+    Accept: "application/vnd.github+json",
+    "Content-Type": "application/json"
+  };
+  let sha;
+  const cur = await fetch(api, { headers });
+  if (cur.ok) sha = (await cur.json()).sha;
+  const res = await fetch(api, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ message, content: base64Content, ...(sha ? { sha } : {}) })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+}
+
+async function pushDayToGitHub(dateKeyStr) {
+  const s = ghSettings();
+  if (!s.token || !s.owner || !s.repo) {
+    ghStatus("Set owner, repo and token below, then save settings.", false);
+    return;
+  }
+  ghStatus("Pushing log…", true);
+  const entries = loadLogs()[dateKeyStr] || [];
+  const payload = { date: dateKeyStr, exportedAt: new Date().toISOString(), entries };
+  await ghPutFile(s, `logs/${dateKeyStr}.json`, utf8ToB64(JSON.stringify(payload, null, 2)),
+    `Daily log ${dateKeyStr} (${entries.length} entries)`);
+
+  if (s.audio) {
+    const recs = entries.filter((e) => e.type === "recitation");
+    for (let i = 0; i < recs.length; i++) {
+      const e = recs[i];
+      const blob = await idb.get(e.id);
+      if (!blob) continue;
+      ghStatus(`Uploading audio ${i + 1}/${recs.length}…`, true);
+      await ghPutFile(s, `recordings/${dateKeyStr}/surah${e.surah}-ayah${e.ayah}-${e.id}.webm`,
+        await blobToB64(blob), `Recording ${dateKeyStr} — ${e.surah}:${e.ayah}`);
+    }
+  }
+  ghStatus(`Pushed ✓ logs/${dateKeyStr}.json — the 8 PM Action will build the Arabic script.`, true);
+}
+
+$("#log-push").addEventListener("click", () => {
+  const key = $("#log-date").value || dayKey();
+  pushDayToGitHub(key).catch((err) => ghStatus("Push failed: " + err.message, false));
+});
+
 /* ---------------- init ---------------- */
 
 (async function init() {
@@ -470,4 +588,5 @@ $("#log-export-all").addEventListener("click", () => {
   renderKalima();
   renderRecordings();
   renderLog();
+  loadGhForm();
 })();

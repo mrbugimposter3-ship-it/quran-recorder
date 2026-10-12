@@ -171,4 +171,20 @@ button { cursor: pointer; }
 .badge.kalima { border-color: var(--accent2); color: var(--accent2); }
 .badge.kalima-complete { border-color: gold; color: gold; }
 
+/* GitHub sync */
+.gh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
+.gh-wide { grid-column: 1 / -1; }
+@media (max-width: 600px) { .gh-grid { grid-template-columns: 1fr; } }
+.gh-options { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.8rem; }
+.gh-options .check { display: flex; gap: 0.4rem; align-items: center; margin: 0; color: var(--text); font-size: 0.9rem; }
+.gh-options input[type="checkbox"] { width: auto; }
+input[type="text"], input[type="password"] {
+  width: 100%; padding: 0.5rem; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--panel); color: var(--text); font-size: 1rem;
+}
+#gh-status { margin-top: 0.6rem; }
+#gh-status.ok { color: var(--accent); }
+#gh-status.err { color: var(--danger); }
+code { background: var(--panel); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.85em; }
+
 footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85rem; }

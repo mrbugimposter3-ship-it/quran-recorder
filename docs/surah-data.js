@@ -125,5 +125,8 @@ const SURAHS = [
     s.end = start + s.ayahs - 1;
     start = s.end + 1;
   }
-  window.TOTAL_VERSES = start - 1; // 6236
+  const g = typeof window !== "undefined" ? window : globalThis;
+  g.SURAHS = SURAHS;
+  g.TOTAL_VERSES = start - 1; // 6236
+  if (typeof module === "object" && module.exports) module.exports = SURAHS;
 })();

@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-12",
+  "exportedAt": "2026-10-12T20:30:00.000Z",
+  "entries": [
+    { "id": "demo1", "type": "recitation", "ts": "2026-10-12T13:02:00.000Z", "surah": 1, "ayah": 1, "global": 1, "durationMs": 6000, "mime": "audio/webm" },
+    { "id": "demo2", "type": "recitation", "ts": "2026-10-12T17:15:00.000Z", "surah": 2, "ayah": 255, "global": 262, "durationMs": 43000, "mime": "audio/webm" },
+    { "id": "demo3", "type": "recitation", "ts": "2026-10-12T22:40:00.000Z", "surah": 18, "ayah": 10, "global": 2149, "durationMs": 15000, "mime": "audio/webm" },
+    { "id": "demo4", "type": "kalima", "ts": "2026-10-12T23:00:00.000Z", "offset": 27, "position": 1, "surah": 27 },
+    { "id": "demo5", "type": "kalima-complete", "ts": "2026-10-12T23:30:00.000Z", "offset": 27, "sequence": [27, 32, 34, 36, 38, 49, 50, 53] }
+  ]
+}

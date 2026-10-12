@@ -112,9 +112,41 @@
         <input id="log-date" type="date">
         <button id="log-export">⬇ Export day (JSON)</button>
         <button id="log-export-all">⬇ Export all</button>
+        <button id="log-script">📜 Arabic script</button>
+        <button id="log-push">⬆ Push to GitHub</button>
       </div>
       <div id="log-stats" class="muted"></div>
       <div id="log-entries" class="log-entries"></div>
+    </div>
+
+    <div class="card">
+      <h2>☁️ GitHub Sync</h2>
+      <p class="muted">
+        Push your daily log to <code>logs/YYYY-MM-DD.json</code> in the repo. Every night at
+        <strong>8:00 PM (New York time)</strong> a GitHub Action reads it and commits a ready-made
+        <strong>Arabic script</strong> of your recorded ayahs to <code>scripts/YYYY-MM-DD.md</code>.
+        Your token is stored only in this browser — never in the repo.
+      </p>
+      <div class="gh-grid">
+        <div>
+          <label>Owner</label>
+          <input id="gh-owner" type="text" placeholder="mrbugimposter3-ship-it">
+        </div>
+        <div>
+          <label>Repo</label>
+          <input id="gh-repo" type="text" placeholder="quran-recorder">
+        </div>
+        <div class="gh-wide">
+          <label>Personal access token (fine-grained, Contents: Read &amp; Write on this repo)</label>
+          <input id="gh-token" type="password" placeholder="github_pat_…">
+        </div>
+      </div>
+      <div class="gh-options">
+        <label class="check"><input id="gh-autopush" type="checkbox"> Auto-push after every recording</label>
+        <label class="check"><input id="gh-audio" type="checkbox"> Also upload audio files (.webm)</label>
+        <button id="gh-save" class="icon-btn">💾 Save settings</button>
+      </div>
+      <div id="gh-status" class="muted"></div>
     </div>
   </section>
 </main>
@@ -124,6 +156,8 @@
 </footer>
 
 <script src="surah-data.js"></script>
+<script src="quran-text.js"></script>
+<script src="script-builder.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,53 @@
+/* Daily 8 PM ET job: read logs/YYYY-MM-DD.json (pushed from the phone app),
+   build a fully Arabic markdown script of the recorded ayahs,
+   write it to scripts/YYYY-MM-DD.md. */
+
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const { buildArabicScript } = require("../docs/script-builder.js");
+
+const TZ = "America/New_York";
+
+function etNow() {
+  const parts = {};
+  for (const p of new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "numeric", hour12: false
+  }).formatToParts(new Date())) {
+    parts[p.type] = p.value;
+  }
+  return {
+    dateKey: `${parts.year}-${parts.month}-${parts.day}`,
+    hour: Number(parts.hour) % 24
+  };
+}
+
+const { dateKey, hour } = etNow();
+
+if (process.env.FORCE !== "1" && hour !== 20) {
+  console.log(`New York time is ${hour}:xx — not 8 PM, skipping (this is the other cron slot).`);
+  process.exit(0);
+}
+
+const logPath = path.join(__dirname, "..", "logs", `${dateKey}.json`);
+if (!fs.existsSync(logPath)) {
+  console.log(`No log pushed for ${dateKey} (logs/${dateKey}.json). Nothing to build.`);
+  process.exit(0);
+}
+
+const log = JSON.parse(fs.readFileSync(logPath, "utf8"));
+const entries = log.entries || [];
+
+if (!entries.some((e) => e.type === "recitation")) {
+  console.log(`Log for ${dateKey} has no recitations — skipping script.`);
+  process.exit(0);
+}
+
+const md = buildArabicScript(dateKey, entries);
+const outDir = path.join(__dirname, "..", "scripts");
+fs.mkdirSync(outDir, { recursive: true });
+const outPath = path.join(outDir, `${dateKey}.md`);
+fs.writeFileSync(outPath, md, "utf8");
+console.log(`✓ Wrote scripts/${dateKey}.md (${md.length} chars, ${entries.filter((e) => e.type === "recitation").length} ayahs)`);
