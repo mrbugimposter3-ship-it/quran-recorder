@@ -104,6 +104,7 @@ document.querySelectorAll(".tab").forEach((btn) => {
 
 const recSurahSel = $("#rec-surah");
 const recAyahInput = $("#rec-ayah");
+const recVerseInput = $("#rec-verse");
 
 function fillSurahSelect(sel) {
   sel.innerHTML = SURAHS.map((s) => `<option value="${s.n}">${surahLabel(s)} — ${s.ayahs} ayahs</option>`).join("");
@@ -119,7 +120,9 @@ function refreshSelection() {
   recAyahInput.value = selectedAyah;
   recAyahInput.max = s.ayahs;
   $("#rec-ayah-max").textContent = `(1–${s.ayahs})`;
-  $("#rec-global").textContent = globalVerse(selectedSurah, selectedAyah);
+  const gv = globalVerse(selectedSurah, selectedAyah);
+  $("#rec-global").textContent = gv;
+  recVerseInput.value = gv;
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
 }
@@ -136,6 +139,23 @@ recAyahInput.addEventListener("change", () => {
 });
 $("#ayah-prev").addEventListener("click", () => { selectedAyah--; refreshSelection(); });
 $("#ayah-next").addEventListener("click", () => { selectedAyah++; refreshSelection(); });
+
+/* --- global verse # selector (1–6236) --- */
+
+function selectGlobalVerse(v) {
+  v = Math.min(Math.max(1, Math.round(v) || 1), TOTAL_VERSES);
+  const hit = findByGlobalVerse(v);
+  selectedSurah = hit.surah.n;
+  selectedAyah = hit.ayah;
+  recSurahSel.value = String(selectedSurah);
+  refreshSelection();
+  highlightFinderRow();
+}
+
+recVerseInput.addEventListener("change", () => selectGlobalVerse(Number(recVerseInput.value)));
+recVerseInput.addEventListener("keydown", (e) => { if (e.key === "Enter") selectGlobalVerse(Number(recVerseInput.value)); });
+$("#verse-prev").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) - 1));
+$("#verse-next").addEventListener("click", () => selectGlobalVerse(globalVerse(selectedSurah, selectedAyah) + 1));
 
 /* --- MediaRecorder --- */
 
