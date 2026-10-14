@@ -812,25 +812,88 @@ function blobToB64(blob) {
   });
 }
 
-async function ghPutFile(s, path, base64Content, message) {
-  const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${path}`;
-  const headers = {
+/* Merge-safe sync: never overwrite another device's entries.
+   entries are unioned by id (fallback: type+ts+surah+ayah) and sorted by ts. */
+function entryKey(e) {
+  return e.id || `${e.type}|${e.ts}|${e.surah ?? ""}|${e.ayah ?? ""}`;
+}
+function mergeEntries(...lists) {
+  const map = new Map();
+  for (const list of lists) for (const e of list || []) { const k = entryKey(e); if (!map.has(k)) map.set(k, e); }
+  return [...map.values()].sort((a, b) => String(a.ts || "").localeCompare(String(b.ts || "")));
+}
+function b64ToUtf8(b64) {
+  return decodeURIComponent(escape(atob(String(b64).replace(/\s/g, ""))));
+}
+function ghHeaders(s) {
+  return {
     Authorization: `Bearer ${s.token}`,
     Accept: "application/vnd.github+json",
     "Content-Type": "application/json"
   };
-  let sha;
-  const cur = await fetch(api, { headers });
-  if (cur.ok) sha = (await cur.json()).sha;
+}
+async function ghGetFile(s, path) {
+  const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${path}`;
+  const res = await fetch(api + `?t=${Date.now()}`, { headers: ghHeaders(s), cache: "no-store" });
+  if (res.status === 404) return null;
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || `HTTP ${res.status}`); }
+  return res.json();
+}
+
+async function ghPutFile(s, path, base64Content, message, sha) {
+  const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${path}`;
+  if (sha === undefined) { const cur = await ghGetFile(s, path); sha = cur ? cur.sha : null; }
   const res = await fetch(api, {
     method: "PUT",
-    headers,
+    headers: ghHeaders(s),
     body: JSON.stringify({ message, content: base64Content, ...(sha ? { sha } : {}) })
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `HTTP ${res.status}`);
+    const e = new Error(err.message || `HTTP ${res.status}`);
+    e.status = res.status;
+    throw e;
   }
+  return res.json();
+}
+
+/* fetch remote day log → merge with local → PUT with sha; retry on sha conflicts. */
+async function syncDayLog(s, dateKeyStr) {
+  const path = `logs/${dateKeyStr}.json`;
+  for (let attempt = 0; attempt <= 3; attempt++) {
+    const remote = await ghGetFile(s, path);
+    let remoteLog = null;
+    if (remote && remote.content) { try { remoteLog = JSON.parse(b64ToUtf8(remote.content)); } catch { remoteLog = null; } }
+    const logs = loadLogs();
+    const merged = mergeEntries(remoteLog && remoteLog.entries, logs[dateKeyStr]);
+    logs[dateKeyStr] = merged;           // each phone now sees every device's entries
+    saveLogs(logs);
+    const now = new Date().toISOString();
+    const exportedAt = remoteLog && remoteLog.exportedAt > now ? remoteLog.exportedAt : now;
+    const payload = { date: dateKeyStr, exportedAt, entries: merged };
+    try {
+      await ghPutFile(s, path, utf8ToB64(JSON.stringify(payload, null, 2)),
+        `Daily log ${dateKeyStr} (${merged.length} entries)`, remote ? remote.sha : null);
+      return merged;
+    } catch (err) {
+      if ((err.status === 409 || err.status === 422) && attempt < 3) continue; // someone pushed in between — refetch & merge
+      throw err;
+    }
+  }
+}
+
+/* pull-only merge (on app open), so a phone sees the other device's stamps */
+async function pullDayLog(dateKeyStr) {
+  const s = ghSettings();
+  if (!s.token || !s.owner || !s.repo) return;
+  const remote = await ghGetFile(s, `logs/${dateKeyStr}.json`);
+  if (!remote || !remote.content) return;
+  const remoteLog = JSON.parse(b64ToUtf8(remote.content));
+  const logs = loadLogs();
+  const before = (logs[dateKeyStr] || []).length;
+  logs[dateKeyStr] = mergeEntries(remoteLog.entries, logs[dateKeyStr]);
+  saveLogs(logs);
+  if (logs[dateKeyStr].length !== before) renderLog();
 }
 
 async function pushDayToGitHub(dateKeyStr) {
@@ -839,24 +902,23 @@ async function pushDayToGitHub(dateKeyStr) {
     ghStatus("Set owner, repo and token below, then save settings.", false);
     return;
   }
-  ghStatus("Pushing log…", true);
-  const entries = loadLogs()[dateKeyStr] || [];
-  const payload = { date: dateKeyStr, exportedAt: new Date().toISOString(), entries };
-  await ghPutFile(s, `logs/${dateKeyStr}.json`, utf8ToB64(JSON.stringify(payload, null, 2)),
-    `Daily log ${dateKeyStr} (${entries.length} entries)`);
+  ghStatus("Syncing log (merge)…", true);
+  const entries = await syncDayLog(s, dateKeyStr);
+  renderLog();
 
   if (s.audio) {
     const recs = entries.filter((e) => e.type === "recitation");
     for (let i = 0; i < recs.length; i++) {
       const e = recs[i];
       const blob = await idb.get(e.id);
-      if (!blob) continue;
+      if (!blob) continue;               // recorded on another device
+      const path = `recordings/${dateKeyStr}/surah${e.surah}-ayah${e.ayah}-${e.id}.webm`;
+      if (await ghGetFile(s, path)) continue; // already uploaded — never overwrite
       ghStatus(`Uploading audio ${i + 1}/${recs.length}…`, true);
-      await ghPutFile(s, `recordings/${dateKeyStr}/surah${e.surah}-ayah${e.ayah}-${e.id}.webm`,
-        await blobToB64(blob), `Recording ${dateKeyStr} — ${e.surah}:${e.ayah}`);
+      await ghPutFile(s, path, await blobToB64(blob), `Recording ${dateKeyStr} — ${e.surah}:${e.ayah}`, null);
     }
   }
-  ghStatus(`Pushed ✓ logs/${dateKeyStr}.json — the 8 PM Action will build the Arabic script.`, true);
+  ghStatus(`Synced ✓ logs/${dateKeyStr}.json (${entries.length} entries, merged) — the 8 PM Action will build the Arabic script.`, true);
 }
 
 $("#log-push").addEventListener("click", () => {
@@ -877,4 +939,5 @@ $("#log-push").addEventListener("click", () => {
   renderRecordings();
   renderLog();
   loadGhForm();
+  pullDayLog(dayKey()).catch(() => {});
 })();
