@@ -1,0 +1,35 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شجرة السور</title><style>
+body{margin:0;background:#0f1a2e;color:#e9ce7a;font-family:'Amiri','Noto Naskh Arabic',serif;overflow:hidden}
+svg{width:100vw;height:100vh;display:block}.leaf{cursor:pointer}.leaf:hover{filter:brightness(1.4)}
+#pop{position:fixed;left:0;right:0;bottom:0;max-height:60vh;overflow:auto;background:#1b2a47ee;padding:10px;display:none;direction:rtl}
+#pop h3{margin:4px 0 8px}#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
+#g button{background:#e9ce7a;border:0;border-radius:6px;padding:10px 0;font-size:16px;cursor:pointer}
+#x{float:left;background:none;color:#e9ce7a;border:1px solid;border-radius:6px;cursor:pointer}
+#tip{position:fixed;top:8px;right:8px;font-size:18px;direction:rtl}</style></head><body>
+<div id="tip">اضغط ورقة لاختيار السورة</div><svg id="s" viewBox="0 0 1000 1000"></svg>
+<div id="pop"><button id="x">✕</button><h3 id="t"></h3><div id="g"></div></div>
+<script>
+const A=[7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+const N="الفاتحة البقرة آل_عمران النساء المائدة الأنعام الأعراف الأنفال التوبة يونس هود يوسف الرعد إبراهيم الحجر النحل الإسراء الكهف مريم طه الأنبياء الحج المؤمنون النور الفرقان الشعراء النمل القصص العنكبوت الروم لقمان السجدة الأحزاب سبأ فاطر يس الصافات ص الزمر غافر فصلت الشورى الزخرف الدخان الجاثية الأحقاف محمد الفتح الحجرات ق الذاريات الطور النجم القمر الرحمن الواقعة الحديد المجادلة الحشر الممتحنة الصف الجمعة المنافقون التغابن الطلاق التحريم الملك القلم الحاقة المعارج نوح الجن المزمل المدثر القيامة الإنسان المرسلات النبأ النازعات عبس التكوير الانفطار المطففين الانشقاق البروج الطارق الأعلى الغاشية الفجر البلد الشمس الليل الضحى الشرح التين العلق القدر البينة الزلزلة العاديات القارعة التكاثر العصر الهمزة الفيل قريش الماعون الكوثر الكافرون النصر المسد الإخلاص الفلق الناس".split(' ').map(s=>s.replace('_',' '));
+const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const s=document.getElementById('s'),NS='http://www.w3.org/2000/svg';
+const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+s.appendChild(el('path',{d:'M480 1000 L470 640 Q500 600 530 640 L520 1000Z',fill:'#6b4a2b'}));
+const pos=[];for(let k=0;k<114;k++){const r=40+330*Math.sqrt((k+.5)/114),th=k*2.39996;pos[k]=[500+r*Math.cos(th),400+r*.85*Math.sin(th)];}
+pos.forEach(([x,y])=>s.appendChild(el('line',{x1:500,y1:620,x2:x,y2:y,stroke:'#5a3d22','stroke-width':1.2,opacity:.35})));
+pos.forEach(([x,y],i)=>{const r=7+Math.sqrt(A[i])*1.9,hue=90+(i*7)%60,g=el('g',{class:'leaf'});
+ g.appendChild(el('ellipse',{cx:x,cy:y,rx:r,ry:r*.7,fill:`hsl(${hue},45%,${30+(i%5)*5}%)`,stroke:'#e9ce7a','stroke-width':.6,transform:`rotate(${(i*37)%180} ${x} ${y})`}));
+ const t=el('text',{x,y:y+4,'text-anchor':'middle','font-size':Math.max(9,r*.6),fill:'#fff'});t.textContent=ar(i+1);g.appendChild(t);
+ const ti=el('title',{});ti.textContent=`${ar(i+1)} ${N[i]} (${ar(A[i])} آية)`;g.appendChild(ti);
+ g.onclick=()=>openS(i+1);s.appendChild(g);});
+const pop=document.getElementById('pop'),G=document.getElementById('g');
+function openS(su){document.getElementById('t').textContent=`سورة ${N[su-1]} (${ar(su)}) — اختر الآية`;G.innerHTML='';
+ for(let a=1;a<=A[su-1];a++){const b=document.createElement('button');b.textContent=ar(a);b.onclick=()=>pick(su,a);G.appendChild(b)}pop.style.display='block'}
+document.getElementById('x').onclick=()=>pop.style.display='none';
+function pick(surah,ayah){pop.style.display='none';const detail={surah,ayah,name:N[surah-1]};
+ document.getElementById('tip').textContent=`✓ ${N[surah-1]} ${ar(surah)}:${ar(ayah)}`;
+ window.dispatchEvent(new CustomEvent('ayahpicked',{detail}));
+ if(window.parent!==window)window.parent.postMessage({type:'ayahpicked',...detail},'*');
+ if(typeof window.onAyahPicked==='function')window.onAyahPicked(detail);}
+</script></body></html>

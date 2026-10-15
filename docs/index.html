@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=picker1">
 </head>
 <body>
 <header>
@@ -24,6 +24,21 @@
     <div class="recorder-grid">
       <div class="card">
         <h2>Selection</h2>
+        <div id="pick-modes" class="pick-modes" role="tablist">
+          <button data-mode="grid" class="pm">▦ Grid</button>
+          <button data-mode="dial" class="pm">◎ Dial</button>
+          <button data-mode="tree" class="pm">🌳 Tree</button>
+          <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
+        </div>
+        <div id="grid-picker" class="grid-picker">
+          <div id="surah-grid" class="surah-grid" dir="rtl"></div>
+          <div id="ayah-grid-wrap" class="hidden">
+            <div class="ag-head"><button id="ag-back">◀ Surahs</button><strong id="ag-title" dir="rtl"></strong></div>
+            <div id="ayah-grid" class="ayah-grid" dir="ltr"></div>
+          </div>
+        </div>
+        <div id="tree-picker" class="hidden"><iframe id="tree-frame" title="Tree picker" style="width:100%;height:60vh;border:0;border-radius:10px"></iframe></div>
+        <div id="dial-picker">
         <label>Surah <span class="muted">— swipe the dial</span></label>
         <select id="rec-surah"></select>
         <div id="surah-strip" class="surah-strip" dir="ltr"></div>
@@ -47,6 +62,7 @@
         </div>
         <div class="verse-badge">
           Global verse <strong id="rec-global">1</strong> / 6236
+        </div>
         </div>
         <div id="rec-ayah-text" class="ayah-text" dir="rtl"></div>
         <div id="rec-word-map" class="word-chips" dir="rtl"></div>
@@ -168,7 +184,9 @@
         </div>
       </div>
       <div class="gh-options">
-        <label class="check"><input id="gh-autopush" type="checkbox"> Auto-push after every recording</label>
+        <label class="check"><input id="gh-autopush" type="checkbox"> Auto-push after every recording/stamp</label>
+        <label class="check"><input id="gh-auto10" type="checkbox"> Auto-push every 10 min (only if today's log changed)</label>
+        <div id="gh-auto10-last" class="muted">Last auto-push: never</div>
         <label class="check"><input id="gh-audio" type="checkbox"> Also upload audio files (.webm)</label>
         <button id="gh-save" class="icon-btn">💾 Save settings</button>
       </div>
@@ -186,6 +204,6 @@
 <script src="number-words.js"></script>
 <script src="word-translations.js"></script>
 <script src="script-builder.js"></script>
-<script src="app.js?v=merge1"></script>
+<script src="app.js?v=picker1"></script>
 </body>
 </html>

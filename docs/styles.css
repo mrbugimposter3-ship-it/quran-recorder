@@ -275,3 +275,20 @@ input[type="text"], input[type="password"] {
 code { background: var(--panel); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.85em; }
 
 footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85rem; }
+
+/* ---- fast picker (grid/dial) ---- */
+.pick-modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.pick-modes .pm{padding:8px 14px;border-radius:10px;min-height:40px}
+.pick-modes .pm.on{background:#2e7d5b;color:#fff}
+.pick-modes .onetap{margin-left:auto;font-size:.9em}
+.surah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:2px}
+.surah-grid button,.ayah-grid button{min-height:40px;padding:2px;border-radius:8px;line-height:1.05;font-size:.72em;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.surah-grid button b{font-size:1.25em}
+.surah-grid button span{font-family:serif;font-size:1.05em;white-space:nowrap;overflow:hidden;max-width:100%}
+.surah-grid button.on,.ayah-grid button.on{outline:2px solid #2e7d5b;background:#d6f0e3}
+.ayah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:3px;max-height:60vh;overflow:auto}
+.ayah-grid button{font-size:1em}
+.ayah-grid button.stamped{background:#ffe9a8}
+.ag-head{display:flex;gap:8px;align-items:center;margin:4px 0}
+.ag-head button{min-height:40px}
+.hidden{display:none!important}

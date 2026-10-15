@@ -96,3 +96,11 @@ python -m http.server 8000   # then open http://localhost:8000
 | `../tools/build-daily-script.js` | Node script the Action runs |
 | `../logs/` | Daily logs pushed from the app |
 | `../scripts/` | Generated Arabic scripts |
+
+## Fast ayah picker (v picker1)
+- **▦ Grid** (default): all 114 surahs on one grid (number + Arabic name). Tap a surah → grid of its ayat → tap an ayah to select. Ayat already stamped today are highlighted. Turn on **One-tap stamp** to log the ayah right away when you tap it.
+- **◎ Dial**: the original surah strip and ayah wheel.
+- **🌳 Tree**: `tree-picker.html` loaded in an iframe; when it emits `ayahpicked`, that ayah is selected (and stamped when One-tap is on).
+
+## Auto-push every 10 minutes
+In GitHub Sync, **Auto-push every 10 min** is on by default once a token is saved. Every 10 minutes (while the app is open and visible), and whenever the app regains focus, it pushes today's log with the merge sync, but only if the log has changed since the last successful sync. When nothing has changed, it makes no network requests. The time of the last auto-push is shown under the toggle.

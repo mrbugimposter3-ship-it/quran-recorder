@@ -786,6 +786,7 @@ function loadGhForm() {
   $("#gh-token").value = s.token || "";
   $("#gh-autopush").checked = !!s.autopush;
   $("#gh-audio").checked = !!s.audio;
+  $("#gh-auto10").checked = s.auto10 !== false;
 }
 
 $("#gh-save").addEventListener("click", () => {
@@ -794,7 +795,8 @@ $("#gh-save").addEventListener("click", () => {
     repo: $("#gh-repo").value.trim(),
     token: $("#gh-token").value.trim(),
     autopush: $("#gh-autopush").checked,
-    audio: $("#gh-audio").checked
+    audio: $("#gh-audio").checked,
+    auto10: $("#gh-auto10").checked
   };
   localStorage.setItem(GH_KEY, JSON.stringify(s));
   ghStatus("Settings saved in this browser ✓", true);
@@ -874,6 +876,7 @@ async function syncDayLog(s, dateKeyStr) {
     try {
       await ghPutFile(s, path, utf8ToB64(JSON.stringify(payload, null, 2)),
         `Daily log ${dateKeyStr} (${merged.length} entries)`, remote ? remote.sha : null);
+      markSynced(dateKeyStr);
       return merged;
     } catch (err) {
       if ((err.status === 409 || err.status === 422) && attempt < 3) continue; // someone pushed in between — refetch & merge
@@ -926,9 +929,136 @@ $("#log-push").addEventListener("click", () => {
   pushDayToGitHub(key).catch((err) => ghStatus("Push failed: " + err.message, false));
 });
 
+/* ---------------- fast picker: surah grid → ayah grid (no scrolling) ---------------- */
+const PICK_KEY = "quranRecorder.pickMode";
+function buildSurahGrid() {
+  $("#surah-grid").innerHTML = SURAHS.map((s) =>
+    `<button data-n="${s.n}" title="${s.n}. ${s.name} — ${s.ayahs}"><b>${s.n}</b><span>${s.ar}</span></button>`).join("");
+  $("#surah-grid").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-n]");
+    if (!b) return;
+    selectSurah(Number(b.dataset.n), 1);
+    openAyahGrid(Number(b.dataset.n));
+  });
+}
+function stampedToday(n) {
+  return new Set((loadLogs()[dayKey()] || []).filter((e) => e.surah === n).map((e) => e.ayah));
+}
+function openAyahGrid(n) {
+  const s = surahByNum(n), done = stampedToday(n);
+  $("#ag-title").textContent = `${s.n}. ${s.ar} — ${s.name} (${s.ayahs})`;
+  let h = "";
+  for (let a = 1; a <= s.ayahs; a++)
+    h += `<button data-a="${a}" class="${a === selectedAyah && n === selectedSurah ? "on " : ""}${done.has(a) ? "stamped" : ""}">${a}</button>`;
+  $("#ayah-grid").innerHTML = h;
+  $("#surah-grid").classList.add("hidden");
+  $("#ayah-grid-wrap").classList.remove("hidden");
+}
+function closeAyahGrid() {
+  $("#ayah-grid-wrap").classList.add("hidden");
+  $("#surah-grid").classList.remove("hidden");
+  $("#surah-grid").querySelectorAll("button").forEach((b) => b.classList.toggle("on", Number(b.dataset.n) === selectedSurah));
+}
+function initGridPicker() {
+  buildSurahGrid();
+  $("#ag-back").addEventListener("click", closeAyahGrid);
+  $("#ayah-grid").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-a]");
+    if (!b) return;
+    selectedAyah = Number(b.dataset.a);
+    refreshSelection();
+    $("#ayah-grid").querySelectorAll("button.on").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on");
+    if ($("#pick-onetap").checked) { $("#btn-stamp").click(); b.classList.add("stamped"); }
+    else $("#btn-stamp").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
+  $("#pick-onetap").checked = localStorage.getItem(PICK_KEY + ".onetap") === "1";
+  $("#pick-onetap").addEventListener("change", (e) => localStorage.setItem(PICK_KEY + ".onetap", e.target.checked ? "1" : "0"));
+  $("#pick-modes").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-mode]");
+    if (b) setPickMode(b.dataset.mode);
+  });
+  setPickMode(localStorage.getItem(PICK_KEY) || "grid");
+}
+/* Tree mode: tree-picker.html (iframe) posts {type:"ayahpicked", surah, ayah} */
+function onTreePicked(d) {
+  const s = surahByNum(Number(d.surah));
+  if (!s) return;
+  selectSurah(s.n, Math.min(Math.max(1, Number(d.ayah) || 1), s.ayahs));
+  if ($("#pick-onetap").checked) $("#btn-stamp").click();
+  else $("#btn-stamp").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+window.addEventListener("message", (ev) => {
+  if (ev.origin !== location.origin && ev.origin !== "null") return;
+  if (ev.data && ev.data.type === "ayahpicked") onTreePicked(ev.data);
+});
+function setPickMode(m) {
+  localStorage.setItem(PICK_KEY, m);
+  $("#pick-modes").querySelectorAll(".pm").forEach((b) => b.classList.toggle("on", b.dataset.mode === m));
+  $("#grid-picker").classList.toggle("hidden", m !== "grid");
+  $("#dial-picker").classList.toggle("hidden", m !== "dial");
+  $("#tree-picker").classList.toggle("hidden", m !== "tree");
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=picker1";
+  if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
+}
+
+/* ---------------- auto-push every 10 min, only when today's log changed ---------------- */
+const SYNCED_KEY = "quranRecorder.syncedSig";
+const AUTO10_LAST = "quranRecorder.auto10Last";
+const AUTO10_MS = 10 * 60 * 1000;
+function logSig(dateKeyStr) {
+  const l = loadLogs()[dateKeyStr] || [];
+  let h = 5381;
+  for (const k of l.map((e) => e.id || e.ts).sort().join(",")) h = ((h << 5) + h + k.charCodeAt(0)) | 0;
+  return l.length + ":" + h;
+}
+function markSynced(dateKeyStr) {
+  const m = JSON.parse(localStorage.getItem(SYNCED_KEY) || "{}");
+  m[dateKeyStr] = logSig(dateKeyStr);
+  localStorage.setItem(SYNCED_KEY, JSON.stringify(m));
+}
+function isDirty(dateKeyStr) {
+  if (!(loadLogs()[dateKeyStr] || []).length) return false;
+  const m = JSON.parse(localStorage.getItem(SYNCED_KEY) || "{}");
+  return m[dateKeyStr] !== logSig(dateKeyStr);
+}
+function auto10Enabled() {
+  const s = ghSettings();
+  return !!s.token && s.auto10 !== false;   // default on when a token is saved
+}
+function showAuto10Last() {
+  const t = localStorage.getItem(AUTO10_LAST);
+  const el = $("#gh-auto10-last");
+  if (el) el.textContent = "Last auto-push: " + (t ? new Date(t).toLocaleString() : "never");
+}
+let auto10Busy = false;
+async function auto10Tick(reason = "timer") {
+  if (auto10Busy || !auto10Enabled() || !navigator.onLine) return false;
+  const key = dayKey();
+  if (!isDirty(key)) return false;           // nothing changed → no network
+  auto10Busy = true;
+  try {
+    await pushDayToGitHub(key);
+    localStorage.setItem(AUTO10_LAST, new Date().toISOString());
+    showAuto10Last();
+    return true;
+  } catch (err) {
+    ghStatus(`Auto-push (${reason}) failed: ` + err.message, false);
+    return false;
+  } finally { auto10Busy = false; }
+}
+function initAuto10() {
+  showAuto10Last();
+  setInterval(() => { if (!document.hidden) auto10Tick("10-min"); }, AUTO10_MS);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) auto10Tick("focus"); });
+  window.addEventListener("focus", () => auto10Tick("focus"));
+}
+
 /* ---------------- init ---------------- */
 
 (async function init() {
+  initGridPicker();   // picker + auto-push don't depend on IndexedDB
+  initAuto10();
   await idb.open();
   buildFinder();
   buildSurahStrip();
