@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "exportedAt": "2026-10-15T22:09:16.369Z",
+  "exportedAt": "2026-10-15T22:19:16.349Z",
   "entries": [
     {
       "id": "mv9m1j11tfn6fo",
@@ -969,6 +969,94 @@
       "surah": 53,
       "ayah": 40,
       "global": 4824
+    },
+    {
+      "id": "mva3k0cd8esnep",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:14:56.701Z",
+      "surah": 53,
+      "ayah": 40,
+      "global": 4824
+    },
+    {
+      "id": "mva3k3a5s3scc7",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:00.509Z",
+      "surah": 53,
+      "ayah": 41,
+      "global": 4825
+    },
+    {
+      "id": "mva3k5c100nijv",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:03.169Z",
+      "surah": 53,
+      "ayah": 42,
+      "global": 4826
+    },
+    {
+      "id": "mva3k72oczy7xr",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:05.424Z",
+      "surah": 53,
+      "ayah": 43,
+      "global": 4827
+    },
+    {
+      "id": "mva3k9izrulffx",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:08.603Z",
+      "surah": 53,
+      "ayah": 44,
+      "global": 4828
+    },
+    {
+      "id": "mva3kdfcpfp8qq",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:13.656Z",
+      "surah": 53,
+      "ayah": 49,
+      "global": 4833
+    },
+    {
+      "id": "mva3kf42g82ykj",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:15.842Z",
+      "surah": 53,
+      "ayah": 50,
+      "global": 4834
+    },
+    {
+      "id": "mva3kghm0ah7o5",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:17.626Z",
+      "surah": 53,
+      "ayah": 51,
+      "global": 4835
+    },
+    {
+      "id": "mva3kiwpq0t8pz",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:20.761Z",
+      "surah": 53,
+      "ayah": 52,
+      "global": 4836
+    },
+    {
+      "id": "mva3kkc3afv4st",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:22.611Z",
+      "surah": 53,
+      "ayah": 53,
+      "global": 4837
+    },
+    {
+      "id": "mva3klkzaxbg9t",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T22:15:24.227Z",
+      "surah": 53,
+      "ayah": 54,
+      "global": 4838
     }
   ]
 }
