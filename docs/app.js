@@ -197,9 +197,12 @@ function syncSurahStrip() {
   strip.querySelectorAll(".surah-chip").forEach((c) =>
     c.classList.toggle("active", Number(c.dataset.n) === selectedSurah));
   const chip = strip.querySelector(".surah-chip.active");
-  if (chip) {
+  if (chip && strip._centeredFor !== selectedSurah) {   // only when the surah actually changes
+    strip._centeredFor = selectedSurah;
     stripLock = true;
-    chip.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    // scroll the strip horizontally only — never the page
+    const cr = chip.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+    strip.scrollTo({ left: strip.scrollLeft + (cr.left - sr.left) - (strip.clientWidth - cr.width) / 2, behavior: "smooth" });
     clearTimeout(strip._lt);
     strip._lt = setTimeout(() => { stripLock = false; }, 350);
   }
@@ -998,7 +1001,7 @@ function setPickMode(m) {
   $("#grid-picker").classList.toggle("hidden", m !== "grid");
   $("#dial-picker").classList.toggle("hidden", m !== "dial");
   $("#tree-picker").classList.toggle("hidden", m !== "tree");
-  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=picker1";
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=picker2";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
 }
 

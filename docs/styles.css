@@ -292,3 +292,6 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .ag-head{display:flex;gap:8px;align-items:center;margin:4px 0}
 .ag-head button{min-height:40px}
 .hidden{display:none!important}
+#dial-picker,#grid-picker,#tree-picker{min-width:0;max-width:100%}
+.surah-strip{max-width:100%}
+.recorder-grid>*{min-width:0}
