@@ -4,12 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=picker2">
+<link rel="stylesheet" href="styles.css?v=pwa1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14533a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quran Rec">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 </head>
 <body>
 <header>
   <h1>📖 Quran Recorder</h1>
   <p class="subtitle">Surah &amp; Ayah recorder · Scroll finder · 6,236 verses · Kalima tracker</p>
+  <div id="install-bar" class="install-bar">
+    <button id="btn-install" class="hidden">📲 Install app</button>
+    <div id="ios-install" class="ios-hint hidden">📲 iPhone: tap <b>Share</b> <span aria-hidden="true">⎋</span> → <b>Add to Home Screen</b>. <button id="ios-x" aria-label="Close">✕</button></div>
+  </div>
   <nav class="tabs">
     <button class="tab active" data-tab="recorder">🎙 Recorder</button>
     <button class="tab" data-tab="finder">📜 Scroll Finder</button>
@@ -28,6 +40,7 @@
           <button data-mode="grid" class="pm">▦ Grid</button>
           <button data-mode="dial" class="pm">◎ Dial</button>
           <button data-mode="tree" class="pm">🌳 Tree</button>
+          <button data-mode="speak" class="pm">🎤 Speak</button>
           <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
         </div>
         <div id="grid-picker" class="grid-picker">
@@ -38,6 +51,21 @@
           </div>
         </div>
         <div id="tree-picker" class="hidden"><iframe id="tree-frame" title="Tree picker" style="width:100%;height:60vh;border:0;border-radius:10px"></iframe></div>
+        <div id="speak-picker" class="speak-picker hidden">
+          <div class="speak-row">
+            <button id="speak-mic" class="speak-mic" aria-label="Hold to speak">🎤</button>
+            <div class="speak-lang" role="group">
+              <button data-lang="ar-SA" class="sl">عربي</button>
+              <button data-lang="en-US" class="sl">English</button>
+            </div>
+          </div>
+          <div id="speak-heard" class="muted" dir="auto">Say: «يس ٤٩» · "Yasin 49" · "36 49" · "surah 2 ayah 255"</div>
+          <form id="smart-form" class="smart-form"><input id="smart-q" type="search" dir="auto" placeholder="🔎 يس ٤٩ / Yasin 49 / 2 255" autocomplete="off"><button>Go</button></form>
+          <div id="speak-result" class="speak-result hidden">
+            <div id="speak-pick" dir="rtl"></div>
+            <button id="speak-confirm" class="stamp-ayah">✓ Stamp this ayah</button>
+          </div>
+        </div>
         <div id="dial-picker">
         <label>Surah <span class="muted">— swipe the dial</span></label>
         <select id="rec-surah"></select>
@@ -204,6 +232,7 @@
 <script src="number-words.js"></script>
 <script src="word-translations.js"></script>
 <script src="script-builder.js"></script>
-<script src="app.js?v=picker2"></script>
+<script src="speak-parse.js?v=pwa1"></script>
+<script src="app.js?v=pwa1"></script>
 </body>
 </html>

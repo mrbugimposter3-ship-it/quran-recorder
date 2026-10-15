@@ -1001,7 +1001,8 @@ function setPickMode(m) {
   $("#grid-picker").classList.toggle("hidden", m !== "grid");
   $("#dial-picker").classList.toggle("hidden", m !== "dial");
   $("#tree-picker").classList.toggle("hidden", m !== "tree");
-  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=picker2";
+  $("#speak-picker").classList.toggle("hidden", m !== "speak");
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=pwa1";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
 }
 
@@ -1057,11 +1058,103 @@ function initAuto10() {
   window.addEventListener("focus", () => auto10Tick("focus"));
 }
 
+/* ---------------- 🎤 Speak mode + typed smart search ---------------- */
+const SPEAK_LANG_KEY = "quranRecorder.speakLang";
+let speakPending = null;
+function showSpeakPick(text) {
+  const r = parsePick(text, SURAHS);
+  const box = $("#speak-result");
+  box.classList.remove("hidden");
+  if (!r.ok) {
+    speakPending = null;
+    $("#speak-pick").textContent = `✗ «${text}» — ${r.reason || "not understood"}`;
+    $("#speak-confirm").disabled = true;
+    return r;
+  }
+  speakPending = r;
+  const s = surahByNum(r.surah);
+  selectSurah(r.surah, r.ayah);
+  $("#speak-pick").textContent = `✓ ${s.ar} (${s.n}) — آية ${r.ayah}  ·  ${s.name} ${r.surah}:${r.ayah}`;
+  $("#speak-confirm").disabled = false;
+  if ($("#pick-onetap").checked) stampSpeakPending();
+  return r;
+}
+function stampSpeakPending() {
+  if (!speakPending) return;
+  selectedSurah = speakPending.surah; selectedAyah = speakPending.ayah; refreshSelection();
+  $("#btn-stamp").click();
+  $("#speak-pick").textContent += "  ⏱ stamped";
+  speakPending = null;
+  $("#speak-confirm").disabled = true;
+}
+function setSpeakLang(l) {
+  localStorage.setItem(SPEAK_LANG_KEY, l);
+  document.querySelectorAll("#speak-picker .sl").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
+}
+function initSpeak() {
+  setSpeakLang(localStorage.getItem(SPEAK_LANG_KEY) || "ar-SA");
+  document.querySelectorAll("#speak-picker .sl").forEach((b) => b.addEventListener("click", () => setSpeakLang(b.dataset.lang)));
+  $("#smart-form").addEventListener("submit", (e) => { e.preventDefault(); const q = $("#smart-q").value.trim(); if (q) showSpeakPick(q); });
+  $("#speak-confirm").addEventListener("click", stampSpeakPending);
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const mic = $("#speak-mic");
+  if (!SR) {
+    mic.disabled = true; mic.title = "Speech recognition not supported in this browser";
+    $("#speak-heard").textContent = "🎤 Voice isn't supported in this browser — type below (same phrases work).";
+    return;
+  }
+  let rec = null;
+  mic.addEventListener("click", () => {
+    if (rec) { rec.stop(); return; }
+    rec = new SR();
+    rec.lang = localStorage.getItem(SPEAK_LANG_KEY) || "ar-SA";
+    rec.interimResults = true; rec.maxAlternatives = 5; rec.continuous = false;
+    mic.classList.add("listening");
+    $("#speak-heard").textContent = rec.lang.startsWith("ar") ? "…أستمع" : "Listening…";
+    rec.onresult = (ev) => {
+      const res = ev.results[ev.results.length - 1];
+      $("#speak-heard").textContent = "🗣 " + res[0].transcript;
+      if (!res.isFinal) return;
+      const alts = Array.from(res).map((a) => a.transcript);
+      const hit = alts.find((t) => parsePick(t, SURAHS).ok);   // first alternative that parses
+      $("#smart-q").value = hit || alts[0];
+      showSpeakPick(hit || alts[0]);
+    };
+    rec.onerror = (ev) => { $("#speak-heard").textContent = "🎤 " + (ev.error === "not-allowed" ? "Microphone permission denied" : "Error: " + ev.error); };
+    rec.onend = () => { mic.classList.remove("listening"); rec = null; };
+    rec.start();
+  });
+}
+
+/* ---------------- PWA: service worker + install button ---------------- */
+let deferredInstall = null;
+function initPWA() {
+  if ("serviceWorker" in navigator && location.protocol !== "file:")
+    navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW failed", e));
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault(); deferredInstall = e;
+    if (!standalone) $("#btn-install").classList.remove("hidden");
+  });
+  $("#btn-install").addEventListener("click", async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    await deferredInstall.userChoice.catch(() => {});
+    deferredInstall = null; $("#btn-install").classList.add("hidden");
+  });
+  window.addEventListener("appinstalled", () => $("#btn-install").classList.add("hidden"));
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (ios && !standalone && localStorage.getItem("quranRecorder.iosHint") !== "x") $("#ios-install").classList.remove("hidden");
+  $("#ios-x").addEventListener("click", () => { $("#ios-install").classList.add("hidden"); localStorage.setItem("quranRecorder.iosHint", "x"); });
+}
+
 /* ---------------- init ---------------- */
 
 (async function init() {
   initGridPicker();   // picker + auto-push don't depend on IndexedDB
   initAuto10();
+  initSpeak();
+  initPWA();
   await idb.open();
   buildFinder();
   buildSurahStrip();

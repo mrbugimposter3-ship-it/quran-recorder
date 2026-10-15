@@ -104,3 +104,16 @@ python -m http.server 8000   # then open http://localhost:8000
 
 ## Auto-push every 10 minutes
 In GitHub Sync, **Auto-push every 10 min** is on by default once a token is saved. Every 10 minutes (while the app is open and visible), and whenever the app regains focus, it pushes today's log with the merge sync, but only if the log has changed since the last successful sync. When nothing has changed, it makes no network requests. The time of the last auto-push is shown under the toggle.
+
+## Install as an app (v1.0)
+- **Android (Chrome/Edge):** open the site and tap **📲 Install app** (or ⋮ menu → *Install app / Add to Home screen*).
+- **iPhone/iPad (Safari):** tap **Share** → **Add to Home Screen**. A hint about this shows on iOS.
+- The service worker (`sw.js`) caches only the app shell, so the app opens offline. GitHub API, alquran.cloud and archive.org requests always go to the network. Bump `VERSION` in `sw.js` (and the `?v=` query) with every release.
+
+## 🎤 Speak mode
+Tap the mic and say a surah and an ayah, e.g. «يس ٤٩», «البقرة مئتين وخمسة وخمسين», "Yasin 49", "36 49", "surah 2 ayah 255". Use the عربي / English toggle to switch recognition between ar-SA and en-US. The parser (`speak-parse.js`) understands:
+- Arabic and English surah names, with common spelling variants and fuzzy matching
+- Arabic-Indic and Western digits
+- Arabic number words and ordinals
+- English number words
+The recognized pick is shown with a **✓ Stamp** button (or it is stamped right away when One-tap is on). The typed smart-search box accepts the same phrases. It is always there, including in browsers without speech recognition. Tests: `node tools/test-speak-parse.js`.

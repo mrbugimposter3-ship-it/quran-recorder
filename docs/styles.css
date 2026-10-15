@@ -295,3 +295,19 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 #dial-picker,#grid-picker,#tree-picker{min-width:0;max-width:100%}
 .surah-strip{max-width:100%}
 .recorder-grid>*{min-width:0}
+
+/* ---- install + speak (v1.0) ---- */
+.install-bar{display:flex;justify-content:center;gap:8px;margin:6px 0}
+#btn-install{background:#d4af37;color:#14261c;font-weight:700;border-radius:10px;padding:8px 14px}
+.ios-hint{font-size:.9em;background:#1f3b2c;border:1px solid #d4af37;border-radius:10px;padding:6px 10px}
+.ios-hint button{background:none;border:0;color:inherit;padding:0 4px}
+.speak-picker{display:flex;flex-direction:column;gap:8px}
+.speak-row{display:flex;align-items:center;gap:10px}
+.speak-mic{width:84px;height:84px;border-radius:50%;font-size:2.2em;background:#14533a;border:3px solid #d4af37;color:#fff}
+.speak-mic.listening{background:#b3261e;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.speak-lang{display:flex;gap:4px}.speak-lang .sl{min-height:40px;padding:6px 12px;border-radius:10px}
+.speak-lang .sl.on{background:#2e7d5b;color:#fff}
+.smart-form{display:flex;gap:6px}.smart-form input{flex:1;min-height:42px;font-size:1.05em}
+.speak-result{border:1px solid #d4af37;border-radius:10px;padding:8px}
+#speak-pick{font-size:1.15em;margin-bottom:6px}
