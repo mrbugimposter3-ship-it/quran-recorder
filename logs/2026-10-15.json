@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "exportedAt": "2026-10-15T19:53:44.758Z",
+  "exportedAt": "2026-10-15T20:08:17.866Z",
   "entries": [
     {
       "id": "mv9m1j11tfn6fo",
@@ -371,6 +371,46 @@
       "global": 5712
     },
     {
+      "id": "mv9t8wb92nfe6u",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T17:26:22.101Z",
+      "surah": 78,
+      "ayah": 39,
+      "global": 5711
+    },
+    {
+      "id": "mv9t965p0ejta4",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T17:26:34.861Z",
+      "surah": 78,
+      "ayah": 24,
+      "global": 5696
+    },
+    {
+      "id": "mv9u1uer94qold",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T17:48:52.659Z",
+      "surah": 99,
+      "ayah": 7,
+      "global": 6145
+    },
+    {
+      "id": "mv9u1uw1aky6uo",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T17:48:53.281Z",
+      "surah": 99,
+      "ayah": 8,
+      "global": 6146
+    },
+    {
+      "id": "mv9u26xrrfbfy3",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T17:49:08.895Z",
+      "surah": 106,
+      "ayah": 2,
+      "global": 6195
+    },
+    {
       "id": "mv9urna7yqsc02",
       "type": "ayah-stamp",
       "ts": "2026-10-15T18:08:56.479Z",
@@ -441,6 +481,22 @@
       "surah": 2,
       "ayah": 286,
       "global": 293
+    },
+    {
+      "id": "mv9yyrj69t0od3",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T20:06:27.042Z",
+      "surah": 23,
+      "ayah": 23,
+      "global": 2696
+    },
+    {
+      "id": "mv9yz2k3dckyjg",
+      "type": "ayah-stamp",
+      "ts": "2026-10-15T20:06:41.331Z",
+      "surah": 23,
+      "ayah": 41,
+      "global": 2714
     }
   ]
 }
