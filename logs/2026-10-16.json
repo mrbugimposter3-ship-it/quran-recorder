@@ -1,6 +1,6 @@
 {
   "date": "2026-10-16",
-  "exportedAt": "2026-10-16T17:44:56.925Z",
+  "exportedAt": "2026-10-16T17:46:49.214Z",
   "entries": [
     {
       "id": "mvaod1adk63b8o",
@@ -499,6 +499,40 @@
       "surah": 21,
       "ayah": 91,
       "global": 2574
+    },
+    {
+      "id": "mvb9cpc0gnio0h",
+      "type": "recitation",
+      "ts": "2026-10-16T17:44:59.766Z",
+      "surah": 21,
+      "ayah": 112,
+      "global": 2595,
+      "durationMs": 3397,
+      "mime": "audio/webm;codecs=opus"
+    },
+    {
+      "id": "mvb9cy3n4d5d7i",
+      "type": "ayah-stamp",
+      "ts": "2026-10-16T17:45:11.076Z",
+      "surah": 18,
+      "ayah": 16,
+      "global": 2156
+    },
+    {
+      "id": "mvb9d83ypgic9d",
+      "type": "ayah-stamp",
+      "ts": "2026-10-16T17:45:24.046Z",
+      "surah": 76,
+      "ayah": 30,
+      "global": 5621
+    },
+    {
+      "id": "mvb9efe2jo7pud",
+      "type": "ayah-stamp",
+      "ts": "2026-10-16T17:46:20.138Z",
+      "surah": 8,
+      "ayah": 25,
+      "global": 1185
     }
   ]
 }
