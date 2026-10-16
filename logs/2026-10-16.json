@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-16",
+  "exportedAt": "2026-10-16T07:57:43.560Z",
+  "entries": [
+    {
+      "id": "mvaod1adk63b8o",
+      "type": "ayah-stamp",
+      "ts": "2026-10-16T07:57:23.269Z",
+      "surah": 106,
+      "ayah": 3,
+      "global": 6196
+    },
+    {
+      "id": "mvaod2ayzb9f2k",
+      "type": "ayah-stamp",
+      "ts": "2026-10-16T07:57:24.586Z",
+      "surah": 106,
+      "ayah": 4,
+      "global": 6197
+    }
+  ]
+}
