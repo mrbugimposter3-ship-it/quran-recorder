@@ -1,6 +1,6 @@
 {
   "date": "2026-10-16",
-  "exportedAt": "2026-10-16T12:32:00.668Z",
+  "exportedAt": "2026-10-16T12:35:04.970Z",
   "entries": [
     {
       "id": "mvaod1adk63b8o",
@@ -129,6 +129,24 @@
       "surah": 90,
       "ayah": 13,
       "global": 6036
+    },
+    {
+      "id": "mvay9zlt5hn7vn",
+      "type": "kalima",
+      "pattern": "fibonacci",
+      "ts": "2026-10-16T12:34:57.281Z",
+      "offset": 67,
+      "position": 1,
+      "surah": 67
+    },
+    {
+      "id": "mvaya50ose5bab",
+      "type": "kalima",
+      "pattern": "fibonacci",
+      "ts": "2026-10-16T12:35:04.296Z",
+      "offset": 67,
+      "position": 89,
+      "surah": 41
     }
   ]
 }
