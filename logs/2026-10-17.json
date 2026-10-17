@@ -1,6 +1,6 @@
 {
   "date": "2026-10-17",
-  "exportedAt": "2026-10-17T14:58:04.307Z",
+  "exportedAt": "2026-10-17T15:08:51.887Z",
   "entries": [
     {
       "id": "mvc3cbbtm9rclh",
@@ -169,6 +169,14 @@
       "surah": 40,
       "ayah": 65,
       "global": 4198
+    },
+    {
+      "id": "mvcj7ree26uys6",
+      "type": "ayah-stamp",
+      "ts": "2026-10-17T15:08:51.446Z",
+      "surah": 12,
+      "ayah": 39,
+      "global": 1635
     }
   ]
 }
