@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=pwa1">
+<link rel="stylesheet" href="styles.css?v=seq1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -41,8 +41,14 @@
           <button data-mode="dial" class="pm">◎ Dial</button>
           <button data-mode="tree" class="pm">🌳 Tree</button>
           <button data-mode="speak" class="pm">🎤 Speak</button>
+          <button data-mode="seq" class="pm">🔢 Seq <span class="ur" lang="ur">ترتیب</span></button>
           <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
         </div>
+        <form id="any-form" class="any-form">
+          <input id="any-n" type="text" inputmode="numeric" autocomplete="off" placeholder="# Any number → ayah (mod 6236) · کوئی بھی عدد">
+          <button>Go <span class="ur" lang="ur">جائیں</span></button>
+        </form>
+        <div id="any-map" class="any-map muted" dir="ltr"></div>
         <div id="grid-picker" class="grid-picker">
           <div id="surah-grid" class="surah-grid" dir="rtl"></div>
           <div id="ayah-grid-wrap" class="hidden">
@@ -65,6 +71,22 @@
             <div id="speak-pick" dir="rtl"></div>
             <button id="speak-confirm" class="stamp-ayah">✓ Stamp this ayah</button>
           </div>
+        </div>
+        <div id="seq-picker" class="seq-picker hidden">
+          <label>Sequence <span class="ur" lang="ur">ترتیب منتخب کریں</span></label>
+          <select id="seq-id"></select>
+          <div id="seq-note" class="muted"></div>
+          <div class="seq-opts">
+            <label>Term # <span class="ur" lang="ur">رکن نمبر</span><input id="seq-k" type="number" min="1" value="1"></label>
+            <label>Offset <span class="ur" lang="ur">اضافہ</span><input id="seq-off" type="number" value="0"></label>
+            <label id="seq-seed-wrap">Seed <span class="ur" lang="ur">بیج</span><input id="seq-seed" type="text" inputmode="numeric" value="27"></label>
+          </div>
+          <button id="seq-here" class="icon-btn">📍 From current ayah <span class="ur" lang="ur">موجودہ آیت سے</span></button>
+          <div class="seq-nav">
+            <button id="seq-prev">◀ Prev <span class="ur" lang="ur">پچھلا</span></button>
+            <button id="seq-next" class="seq-next">Next ▶ <span class="ur" lang="ur">اگلا</span></button>
+          </div>
+          <div id="seq-out" class="seq-out" dir="ltr"></div>
         </div>
         <div id="dial-picker">
         <label>Surah <span class="muted">— swipe the dial</span></label>
@@ -232,7 +254,8 @@
 <script src="number-words.js"></script>
 <script src="word-translations.js"></script>
 <script src="script-builder.js"></script>
-<script src="speak-parse.js?v=pwa1"></script>
-<script src="app.js?v=pwa1"></script>
+<script src="speak-parse.js?v=seq1"></script>
+<script src="sequences.js?v=seq1"></script>
+<script src="app.js?v=seq1"></script>
 </body>
 </html>

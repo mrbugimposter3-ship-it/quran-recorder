@@ -1002,7 +1002,8 @@ function setPickMode(m) {
   $("#dial-picker").classList.toggle("hidden", m !== "dial");
   $("#tree-picker").classList.toggle("hidden", m !== "tree");
   $("#speak-picker").classList.toggle("hidden", m !== "speak");
-  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=pwa1";
+  $("#seq-picker").classList.toggle("hidden", m !== "seq");
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=seq1";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
 }
 
@@ -1148,12 +1149,79 @@ function initPWA() {
   $("#ios-x").addEventListener("click", () => { $("#ios-install").classList.add("hidden"); localStorage.setItem("quranRecorder.iosHint", "x"); });
 }
 
+/* ---------------- any number → ayah (mod 6236) + 🔢 sequence mode ---------------- */
+function goGlobal(g, label) {
+  const r = QSeq.toRef(g, SURAHS);
+  selectSurah(r.surah, r.ayah);
+  return r;
+}
+function mapText(n, g, r) {
+  const s = String(n);
+  return `${s.length > 40 ? s.slice(0, 18) + "…" + s.slice(-12) + ` (${s.length} digits)` : s} → #${g} → ${r.surah}:${r.ayah}  ${surahByNum(r.surah).ar}`;
+}
+function initAnyNumber() {
+  $("#any-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const raw = $("#any-n").value;
+    const g = QSeq.wrap(raw);
+    if (g == null) { $("#any-map").textContent = "✗ Enter a whole number (any size, negatives OK) · صرف عدد درج کریں"; return; }
+    const r = goGlobal(g);
+    $("#any-map").textContent = mapText(raw.trim(), g, r);
+    if ($("#pick-onetap").checked) $("#btn-stamp").click();
+  });
+}
+const SEQ_KEY = "quranRecorder.seq.v1";
+function seqState() { try { return Object.assign({ id: "fib", pos: {}, off: 0, seed: "27" }, JSON.parse(localStorage.getItem(SEQ_KEY))); } catch { return { id: "fib", pos: {}, off: 0, seed: "27" }; } }
+function seqSave(st) { localStorage.setItem(SEQ_KEY, JSON.stringify(st)); }
+function seqKey(st) { return st.id === "collatz" ? "collatz:" + st.seed : st.id; }
+function seqTermBig(st, k) { return QSeq.term(st.id, k, st.id === "collatz" ? BigInt(st.seed || 27) : undefined); }
+function seqShowForm(st) {
+  const d = QSeq.byId[st.id];
+  $("#seq-id").value = st.id;
+  $("#seq-note").textContent = d.note;
+  $("#seq-k").value = st.pos[seqKey(st)] || 1;
+  $("#seq-off").value = st.off || 0;
+  $("#seq-seed").value = st.seed;
+  $("#seq-seed-wrap").classList.toggle("hidden", !d.seed);
+}
+function seqApply(k, stamp) {
+  const st = seqState();
+  k = Math.max(1, Math.floor(k) || 1);
+  st.pos[seqKey(st)] = k; seqSave(st);
+  $("#seq-k").value = k;
+  let t;
+  try { t = seqTermBig(st, k); } catch (err) { $("#seq-out").textContent = "✗ " + err.message; return; }
+  const v = t + BigInt(st.off || 0);
+  const g = QSeq.wrap(v), r = goGlobal(g);
+  $("#seq-out").textContent = `${QSeq.byId[st.id].en} a(${k}) = ` + mapText(String(t) + (st.off ? ` ${st.off > 0 ? "+" : "−"} ${Math.abs(st.off)}` : ""), g, r);
+  if (stamp && $("#pick-onetap").checked) $("#btn-stamp").click();
+}
+function initSeq() {
+  $("#seq-id").innerHTML = QSeq.SEQ.map((s) => `<option value="${s.id}">${s.en} · ${s.ur}</option>`).join("");
+  seqShowForm(seqState());
+  $("#seq-id").addEventListener("change", () => { const st = seqState(); st.id = $("#seq-id").value; seqSave(st); seqShowForm(st); seqApply(Number($("#seq-k").value), false); });
+  $("#seq-off").addEventListener("change", () => { const st = seqState(); st.off = Math.trunc(Number($("#seq-off").value) || 0); seqSave(st); seqApply(Number($("#seq-k").value), false); });
+  $("#seq-seed").addEventListener("change", () => { const st = seqState(); const v = $("#seq-seed").value.replace(/\D/g, "") || "27"; st.seed = v === "0" ? "27" : v; seqSave(st); seqShowForm(st); seqApply(Number($("#seq-k").value), false); });
+  $("#seq-k").addEventListener("change", () => seqApply(Number($("#seq-k").value), false));
+  $("#seq-next").addEventListener("click", () => seqApply(Number($("#seq-k").value) + 1, true));
+  $("#seq-prev").addEventListener("click", () => seqApply(Number($("#seq-k").value) - 1, true));
+  $("#seq-here").addEventListener("click", () => {
+    // shift the offset so the current term lands exactly on the selected ayah; Next/Prev then follow the sequence from here
+    const st = seqState(), k = Number($("#seq-k").value) || 1;
+    const cur = globalVerse(selectedSurah, selectedAyah);
+    st.off = cur - QSeq.wrap(seqTermBig(st, k)); seqSave(st);
+    $("#seq-off").value = st.off; seqApply(k, false);
+  });
+}
+
 /* ---------------- init ---------------- */
 
 (async function init() {
   initGridPicker();   // picker + auto-push don't depend on IndexedDB
   initAuto10();
   initSpeak();
+  initAnyNumber();
+  initSeq();
   initPWA();
   await idb.open();
   buildFinder();

@@ -311,3 +311,15 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .smart-form{display:flex;gap:6px}.smart-form input{flex:1;min-height:42px;font-size:1.05em}
 .speak-result{border:1px solid #d4af37;border-radius:10px;padding:8px}
 #speak-pick{font-size:1.15em;margin-bottom:6px}
+
+/* ---- any-number + sequence mode (v1.1) ---- */
+.ur{font-family:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;font-size:.8em;opacity:.8;margin-inline-start:.35em}
+.any-form{display:flex;gap:6px;margin:4px 0}.any-form input{flex:1;min-height:42px;font-size:1.05em}
+.any-map{font-size:.9em;min-height:1.2em;word-break:break-all}
+.seq-picker{display:flex;flex-direction:column;gap:8px}
+.seq-picker select{min-height:42px}
+.seq-opts{display:flex;gap:8px;flex-wrap:wrap}.seq-opts label{display:flex;flex-direction:column;flex:1;min-width:90px}
+.seq-opts input{min-height:40px}
+.seq-nav{display:flex;gap:8px}.seq-nav button{flex:1;min-height:56px;font-size:1.1em;border-radius:12px}
+.seq-next{background:#14533a;color:#fff;border:2px solid #d4af37}
+.seq-out{font-size:.95em;word-break:break-all;border:1px solid #d4af37;border-radius:10px;padding:6px 8px;min-height:1.4em}

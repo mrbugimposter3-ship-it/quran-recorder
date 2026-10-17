@@ -117,3 +117,13 @@ Tap the mic and say a surah and an ayah, e.g. «يس ٤٩», «البقرة مئ
 - Arabic number words and ordinals
 - English number words
 The recognized pick is shown with a **✓ Stamp** button (or it is stamped right away when One-tap is on). The typed smart-search box accepts the same phrases. It is always there, including in browsers without speech recognition. Tests: `node tools/test-speak-parse.js`.
+
+## # Any number → ayah, and 🔢 Sequence mode (v1.1)
+- **Any number box** (top of Selection): type any whole number, of any size, negatives allowed (Arabic-Indic digits and commas are fine too). It maps to global ayah `((n − 1) mod 6236) + 1` and selects it. Examples: `10000 → #3764 → 36:59`, `6236 → 114:6`, `0 → #6236 (114:6)`, `-1 → #6235 (114:5)`, `6237 → 1:1`.
+- **🔢 Seq mode**: pick a sequence, then use **Next ▶ / ◀ Prev** to step through its terms. Each term (plus the offset) is mod-6236'd to an ayah and selected, and stamped right away if One-tap is on.
+  - **Term #** jumps to any position.
+  - **Offset** is added to every term.
+  - **📍 From current ayah** sets the offset so the current term lands on the ayah you have selected. Next/Prev then follow the sequence's steps from there.
+  - The sequence and the position in each sequence are remembered.
+- Sequences: natural, Fibonacci, Lucas, primes, squares, cubes, cube roots (`⌊1000·∛n⌋`, i.e. ∛n to 3 decimals; plain `⌊∛n⌋` would repeat the same ayah ~3k² times in a row), triangular, pentagonal, hexagonal, tetrahedral, Catalan, powers of 2, factorials, π / φ / e digits as running numbers (3, 31, 314…), golden angle `⌊n·137.508⌋`, Padovan, perfect numbers (from the first 20 Mersenne primes), Collatz from a seed.
+- All arithmetic uses BigInt, so huge terms (factorials, 2ⁿ, digit strings) are exact. Tests: `node tools/test-sequences.js`.
