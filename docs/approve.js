@@ -23,7 +23,8 @@
     const N = books.length;
     const b = books[(((surah - 1) % N) + N) % N];
     const c = b.chapter_count ? (((ayah - 1) % b.chapter_count) + b.chapter_count) % b.chapter_count + 1 : null;
-    return { book: b.book_number, title: b.title, summary: b.summary, chapter: c, chapters: b.chapter_count || null };
+    if (b.theme === "holiday") return { book: b.book_number, theme: "holiday", none: true };   // left out: no pairing for this surah
+    return { book: b.book_number, title: b.title, summary: b.summary, chapter: c, chapters: b.chapter_count || null, theme: b.theme || null };
   }
   /* a Daily Log entry identical in shape to the ⏱ stamp, plus optional note fields */
   function logEntry(c, extra) {

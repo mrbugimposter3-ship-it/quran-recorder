@@ -1,11 +1,11 @@
 /* Quran Recorder service worker — caches the app shell only.
    Bump VERSION with every release so phones pick up the new files. */
-const VERSION = "v1.2.0";
+const VERSION = "v1.2.1";
 const CACHE = "quran-recorder-" + VERSION;
 const SHELL = [
-  "./", "./index.html", "./styles.css?v=approve1", "./app.js?v=approve1", "./speak-parse.js?v=approve1", "./sequences.js?v=approve1", "./approve.js?v=approve1", "./geronimo-books.js?v=approve1",
+  "./", "./index.html", "./styles.css?v=ghost1", "./app.js?v=ghost1", "./speak-parse.js?v=ghost1", "./sequences.js?v=ghost1", "./approve.js?v=ghost1", "./geronimo-books.js?v=ghost1",
   "./surah-data.js", "./quran-text.js", "./number-words.js", "./script-builder.js", "./word-translations.js",
-  "./tree-picker.html?v=approve1", "./manifest.json",
+  "./tree-picker.html?v=ghost1", "./manifest.json",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-192.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"
 ];
 self.addEventListener("install", (e) => {

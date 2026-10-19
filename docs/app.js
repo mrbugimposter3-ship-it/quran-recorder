@@ -688,7 +688,7 @@ $("#log-date").addEventListener("change", renderLog);
 function describeEntry(e) {
   if (e.type === "ayah-stamp") {
     const s = surahByNum(e.surah);
-    const via = e.via === "approve" ? ` — ✅ approved${e.seq && QSeq.byId[e.seq] ? ` (${QSeq.byId[e.seq].en} a(${e.term}))` : ""}${e.geronimo ? ` · 📚 #${e.geronimo.book}${e.geronimo.chapter ? " ch " + e.geronimo.chapter : ""}` : ""}` : "";
+    const via = e.via === "approve" ? ` — ✅ approved${e.seq && QSeq.byId[e.seq] ? ` (${QSeq.byId[e.seq].en} a(${e.term}))` : ""}${e.geronimo ? ` · 📚 #${e.geronimo.book}${e.geronimo.chapter ? " ch " + e.geronimo.chapter : ""}${e.geronimo.kirinomori ? " 👻" : ""}` : ""}` : "";
     return `⏱ Timestamped <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global})${via}`;
   }
   if (e.type === "recitation") {
@@ -1006,7 +1006,7 @@ function setPickMode(m) {
   $("#seq-picker").classList.toggle("hidden", m !== "seq");
   $("#approve-picker").classList.toggle("hidden", !AP_MODES.includes(m));
   if (AP_MODES.includes(m)) apRender();
-  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=approve1";
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=ghost1";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
 }
 
@@ -1250,7 +1250,8 @@ function apRender() {
       <div class="muted ap-meta" dir="ltr">a(${c.k}) = ${apEsc(t)} → #${c.global}</div>`;
     if (book) {
       const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah);
-      h += `<div class="ap-book" dir="ltr"><div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
+      if (g.none) h += `<div class="ap-nobook muted" dir="ltr">📚 No pairing for this surah <span class="ur" lang="ur">اس سورت کی کوئی جوڑی نہیں</span></div>`;
+      else h += `<div class="ap-book${g.theme === "ghost" ? " ghost" : ""}" dir="ltr">${g.theme === "ghost" ? '<div class="ap-ghost">👻 kirinomori</div>' : ""}<div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
         <div><strong>📚 Geronimo Stilton #${g.book}${g.chapter ? ` · chapter ${g.chapter}/${g.chapters}` : ""}</strong> — <em>${apEsc(g.title)}</em></div>
         <div class="ap-sum">${apEsc(g.summary)}</div></div>`;
     }
@@ -1263,7 +1264,7 @@ function apDecide(yes) {
   if (yes) {
     for (const c of apShown) {
       const extra = { id: uid(), ts: new Date().toISOString(), via: "approve", seq: st.id, term: c.k };
-      if (book) { const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah); extra.geronimo = g.chapter ? { book: g.book, chapter: g.chapter } : { book: g.book }; }
+      if (book) { const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah); if (!g.none) { extra.geronimo = { book: g.book }; if (g.chapter) extra.geronimo.chapter = g.chapter; if (g.theme === "ghost") extra.geronimo.kirinomori = true; } }
       addLogEntry(QApprove.logEntry(c, extra));
     }
     st.apos = st.apos || {}; st.apos[seqKey(st)] = k;   // pin the cursor before moving 🔢 Seq's position
