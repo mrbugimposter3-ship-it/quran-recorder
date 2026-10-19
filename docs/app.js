@@ -688,7 +688,8 @@ $("#log-date").addEventListener("change", renderLog);
 function describeEntry(e) {
   if (e.type === "ayah-stamp") {
     const s = surahByNum(e.surah);
-    return `⏱ Timestamped <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global})`;
+    const via = e.via === "approve" ? ` — ✅ approved${e.seq && QSeq.byId[e.seq] ? ` (${QSeq.byId[e.seq].en} a(${e.term}))` : ""}${e.geronimo ? ` · 📚 #${e.geronimo.book}${e.geronimo.chapter ? " ch " + e.geronimo.chapter : ""}` : ""}` : "";
+    return `⏱ Timestamped <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global})${via}`;
   }
   if (e.type === "recitation") {
     const s = surahByNum(e.surah);
@@ -1003,7 +1004,9 @@ function setPickMode(m) {
   $("#tree-picker").classList.toggle("hidden", m !== "tree");
   $("#speak-picker").classList.toggle("hidden", m !== "speak");
   $("#seq-picker").classList.toggle("hidden", m !== "seq");
-  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=seq1";
+  $("#approve-picker").classList.toggle("hidden", !AP_MODES.includes(m));
+  if (AP_MODES.includes(m)) apRender();
+  if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=approve1";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
 }
 
@@ -1214,6 +1217,76 @@ function initSeq() {
   });
 }
 
+/* ---------------- ✅ Approve · 📚 Geronimo · 2️⃣ two-ayah review modes ----------------
+   Uses the 🔢 Seq sequence/offset/seed. Cursor = next candidate term, saved per sequence in localStorage. */
+const AP_MODES = ["approve", "geronimo", "pair"];
+const AP_BOOK_KEY = "quranRecorder.approve.book";
+const apEsc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function apMode() { const m = localStorage.getItem(PICK_KEY); return AP_MODES.includes(m) ? m : "approve"; }
+function apCursor(st) { st.apos = st.apos || {}; return st.apos[seqKey(st)] || ((st.pos[seqKey(st)] || 0) + 1); }
+function apSetCursor(k) { const st = seqState(); st.apos = st.apos || {}; st.apos[seqKey(st)] = Math.max(1, Math.floor(k) || 1); seqSave(st); }
+function apShowBook(m) { return m === "geronimo" || localStorage.getItem(AP_BOOK_KEY) === "1"; }
+let apShown = [];
+function apRender() {
+  const sel = $("#ap-seq");
+  if (!sel.options.length) sel.innerHTML = QSeq.SEQ.map((s) => `<option value="${s.id}">${s.en} · ${s.ur}</option>`).join("");
+  const m = apMode(), st = seqState(), pair = m === "pair", k = apCursor(st), book = apShowBook(m);
+  sel.value = st.id;
+  $("#ap-k").value = k;
+  $("#ap-title").innerHTML = m === "pair" ? `2️⃣ Two ayahs — Yes logs both, No skips both <span class="ur" lang="ur">ہاں دونوں درج، نہیں دونوں چھوڑیں</span>`
+    : m === "geronimo" ? `📚 Geronimo pairing — Yes logs the ayah <span class="ur" lang="ur">ہاں آیت درج کرتا ہے</span>`
+    : `✅ Approve next ayah — Yes logs, No skips <span class="ur" lang="ur">ہاں درج، نہیں چھوڑیں</span>`;
+  $("#ap-book-wrap").classList.toggle("hidden", m === "geronimo");
+  $("#ap-book").checked = book;
+  $("#ap-info").textContent = `${QSeq.byId[st.id].en}${st.off ? ` · offset ${st.off}` : ""}${QSeq.byId[st.id].seed ? ` · seed ${st.seed}` : ""} — change offset/seed in 🔢 Seq`;
+  try { apShown = QApprove.step(QSeq, SURAHS, st, k, pair); }
+  catch (err) { apShown = []; $("#ap-cards").textContent = "✗ " + err.message; return; }
+  const done = new Set((loadLogs()[dayKey()] || []).map((e) => e.surah + ":" + e.ayah));
+  $("#ap-cards").classList.toggle("two", pair);
+  $("#ap-cards").innerHTML = apShown.map((c) => {
+    const s = surahByNum(c.surah), t = c.term.length > 24 ? c.term.slice(0, 10) + "…" + c.term.slice(-8) : c.term;
+    let h = `<div class="ap-card"><div class="ap-ref">${c.surah}:${c.ayah} · ${apEsc(s.ar)} · ${apEsc(s.name)}${done.has(c.surah + ":" + c.ayah) ? ' <span class="ap-done">✓ logged today</span>' : ""}</div>
+      <div class="ap-ar" dir="rtl" lang="ar">${apEsc(ayahText(c.surah, c.ayah) || "…")}</div>
+      <div class="muted ap-meta" dir="ltr">a(${c.k}) = ${apEsc(t)} → #${c.global}</div>`;
+    if (book) {
+      const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah);
+      h += `<div class="ap-book" dir="ltr"><div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
+        <div><strong>📚 Geronimo Stilton #${g.book}${g.chapter ? ` · chapter ${g.chapter}/${g.chapters}` : ""}</strong> — <em>${apEsc(g.title)}</em></div>
+        <div class="ap-sum">${apEsc(g.summary)}</div></div>`;
+    }
+    return h + "</div>";
+  }).join("");
+}
+function apDecide(yes) {
+  if (!apShown.length) return;
+  const m = apMode(), st = seqState(), pair = m === "pair", book = apShowBook(m), k = apCursor(st);
+  if (yes) {
+    for (const c of apShown) {
+      const extra = { id: uid(), ts: new Date().toISOString(), via: "approve", seq: st.id, term: c.k };
+      if (book) { const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah); extra.geronimo = g.chapter ? { book: g.book, chapter: g.chapter } : { book: g.book }; }
+      addLogEntry(QApprove.logEntry(c, extra));
+    }
+    st.apos = st.apos || {}; st.apos[seqKey(st)] = k;   // pin the cursor before moving 🔢 Seq's position
+    st.pos[seqKey(st)] = apShown[apShown.length - 1].k; seqSave(st);   // 🔢 Seq resumes from the last approved term
+    const last = apShown[apShown.length - 1]; goGlobal(last.global);
+    $("#ap-status").textContent = `✅ Logged ${apShown.map((c) => c.surah + ":" + c.ayah).join(" + ")} at ${timeStr(new Date().toISOString())}`;
+    renderLog(); maybeAutoPush();
+  } else {
+    $("#ap-status").textContent = `❌ Skipped ${apShown.map((c) => c.surah + ":" + c.ayah).join(" + ")} (not logged)`;
+  }
+  apSetCursor(QApprove.advance(k, pair));
+  apRender();
+}
+function initApprove() {
+  $("#ap-seq").addEventListener("change", () => { const st = seqState(); st.id = $("#ap-seq").value; seqSave(st); seqShowForm(st); apRender(); });
+  $("#ap-yes").addEventListener("click", () => apDecide(true));
+  $("#ap-no").addEventListener("click", () => apDecide(false));
+  $("#ap-back").addEventListener("click", () => { apSetCursor(QApprove.back(apCursor(seqState()), apMode() === "pair")); $("#ap-status").textContent = "◀ Back one step (log unchanged)"; apRender(); });
+  $("#ap-k").addEventListener("change", () => { apSetCursor(Number($("#ap-k").value)); apRender(); });
+  $("#ap-book").addEventListener("change", (e) => { localStorage.setItem(AP_BOOK_KEY, e.target.checked ? "1" : "0"); apRender(); });
+  if (AP_MODES.includes(localStorage.getItem(PICK_KEY))) apRender();
+}
+
 /* ---------------- init ---------------- */
 
 (async function init() {
@@ -1222,6 +1295,7 @@ function initSeq() {
   initSpeak();
   initAnyNumber();
   initSeq();
+  initApprove();
   initPWA();
   await idb.open();
   buildFinder();

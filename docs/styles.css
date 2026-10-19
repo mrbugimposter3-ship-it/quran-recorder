@@ -323,3 +323,20 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .seq-nav{display:flex;gap:8px}.seq-nav button{flex:1;min-height:56px;font-size:1.1em;border-radius:12px}
 .seq-next{background:#14533a;color:#fff;border:2px solid #d4af37}
 .seq-out{font-size:.95em;word-break:break-all;border:1px solid #d4af37;border-radius:10px;padding:6px 8px;min-height:1.4em}
+
+/* ✅ Approve · 📚 Geronimo · 2️⃣ two ayahs */
+.approve-picker{display:flex;flex-direction:column;gap:8px}
+.approve-picker select{min-height:42px}
+.ap-title{font-weight:600}
+.ap-cards{display:grid;gap:8px;grid-template-columns:1fr}
+.ap-cards.two{grid-template-columns:1fr 1fr}
+.ap-card{border:1px solid #d4af37;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ap-ref{font-weight:600}.ap-done{color:#14533a;font-weight:400;font-size:.85em}
+.ap-ar{font-size:1.5em;line-height:1.9}
+.ap-meta{font-size:.85em;word-break:break-all}
+.ap-book{background:rgba(212,175,55,.12);border-radius:8px;padding:6px 8px;font-size:.92em}
+.ap-tag{font-size:.85em;opacity:.8}.ap-sum{margin-top:2px}
+.ap-nav{display:flex;gap:8px}.ap-nav button{flex:1;min-height:60px;font-size:1.2em;border-radius:12px}
+.ap-yes{background:#14533a;color:#fff;border:2px solid #d4af37}
+.ap-no{background:#7a1f1f;color:#fff;border:2px solid #d4af37}
+.ap-sub{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.ap-sub label{display:flex;flex-direction:column}.ap-sub input{min-height:40px;width:7em}

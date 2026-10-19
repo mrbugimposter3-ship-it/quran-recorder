@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=seq1">
+<link rel="stylesheet" href="styles.css?v=approve1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,6 +42,9 @@
           <button data-mode="tree" class="pm">🌳 Tree</button>
           <button data-mode="speak" class="pm">🎤 Speak</button>
           <button data-mode="seq" class="pm">🔢 Seq <span class="ur" lang="ur">ترتیب</span></button>
+          <button data-mode="approve" class="pm">✅ Approve <span class="ur" lang="ur">منظوری</span></button>
+          <button data-mode="geronimo" class="pm">📚 Geronimo <span class="ur" lang="ur">جیرونیمو</span></button>
+          <button data-mode="pair" class="pm">2️⃣ 2 Ayahs <span class="ur" lang="ur">دو آیات</span></button>
           <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
         </div>
         <form id="any-form" class="any-form">
@@ -87,6 +90,23 @@
             <button id="seq-next" class="seq-next">Next ▶ <span class="ur" lang="ur">اگلا</span></button>
           </div>
           <div id="seq-out" class="seq-out" dir="ltr"></div>
+        </div>
+        <div id="approve-picker" class="approve-picker hidden">
+          <div id="ap-title" class="ap-title"></div>
+          <label>Sequence <span class="ur" lang="ur">ترتیب منتخب کریں</span></label>
+          <select id="ap-seq"></select>
+          <div id="ap-info" class="muted" dir="ltr"></div>
+          <label id="ap-book-wrap" class="check"><input id="ap-book" type="checkbox"> 📚 Show Geronimo pairing <span class="ur" lang="ur">جیرونیمو جوڑی دکھائیں</span></label>
+          <div id="ap-cards" class="ap-cards"></div>
+          <div class="ap-nav">
+            <button id="ap-no" class="ap-no">❌ No <span class="ur" lang="ur">نہیں</span></button>
+            <button id="ap-yes" class="ap-yes">✅ Yes <span class="ur" lang="ur">ہاں</span></button>
+          </div>
+          <div class="ap-sub">
+            <button id="ap-back" class="icon-btn">◀ Back <span class="ur" lang="ur">واپس</span></button>
+            <label>Next term # <span class="ur" lang="ur">اگلا رکن نمبر</span><input id="ap-k" type="number" min="1" value="1"></label>
+          </div>
+          <div id="ap-status" class="muted" dir="auto"></div>
         </div>
         <div id="dial-picker">
         <label>Surah <span class="muted">— swipe the dial</span></label>
@@ -254,8 +274,10 @@
 <script src="number-words.js"></script>
 <script src="word-translations.js"></script>
 <script src="script-builder.js"></script>
-<script src="speak-parse.js?v=seq1"></script>
-<script src="sequences.js?v=seq1"></script>
-<script src="app.js?v=seq1"></script>
+<script src="speak-parse.js?v=approve1"></script>
+<script src="sequences.js?v=approve1"></script>
+<script src="approve.js?v=approve1"></script>
+<script src="geronimo-books.js?v=approve1"></script>
+<script src="app.js?v=approve1"></script>
 </body>
 </html>
