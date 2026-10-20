@@ -1,6 +1,6 @@
 {
   "date": "2026-10-20",
-  "exportedAt": "2026-10-20T14:46:23.065Z",
+  "exportedAt": "2026-10-20T14:50:49.500Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -43,6 +43,20 @@
       "via": "approve",
       "seq": "fib",
       "term": 36
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 4,
+      "ayah": 167,
+      "global": 660,
+      "id": "mvgsw2e3lozfrp",
+      "ts": "2026-10-20T14:50:46.683Z",
+      "via": "approve",
+      "seq": "fib",
+      "term": 39,
+      "geronimo": {
+        "book": 4
+      }
     }
   ]
 }
