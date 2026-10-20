@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-20",
+  "exportedAt": "2026-10-20T11:27:02.625Z",
+  "entries": [
+    {
+      "type": "ayah-stamp",
+      "surah": 106,
+      "ayah": 4,
+      "global": 6197,
+      "id": "mvglm2289us6y8",
+      "ts": "2026-10-20T11:27:02.384Z",
+      "via": "approve",
+      "seq": "fib",
+      "term": 34,
+      "geronimo": {
+        "book": 20,
+        "chapter": 4
+      }
+    }
+  ]
+}
