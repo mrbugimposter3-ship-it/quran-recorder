@@ -147,6 +147,7 @@ function refreshSelection() {
   syncAyahDial();
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
+  if (!$("#letters-picker").classList.contains("hidden")) lwRender();
 }
 
 recSurahSel.addEventListener("change", () => {
@@ -1005,9 +1006,53 @@ function setPickMode(m) {
   $("#speak-picker").classList.toggle("hidden", m !== "speak");
   $("#seq-picker").classList.toggle("hidden", m !== "seq");
   $("#approve-picker").classList.toggle("hidden", !AP_MODES.includes(m));
+  $("#letters-picker").classList.toggle("hidden", m !== "letters");
+  if (m === "letters") lwRender();
   if (AP_MODES.includes(m)) apRender();
   if (m === "tree" && !$("#tree-frame").src) $("#tree-frame").src = "tree-picker.html?v=ghost1";
   if (m === "grid") closeAyahGrid(); else { dialFor = null; refreshSelection(); }
+}
+
+/* ---------------- 🔤 Letters mode: letter-pattern avatar (wardrobe.js) ----------------
+   Fixed 28-letter table (tajweed sifat = fabric, makhraj = colour); first/middle/last letter dress top/outer/bottom. Never the meaning.
+   Avatar is always seen from behind (no face). Same algorithm as letter-wardrobe/outfit.py. */
+let lwSpec = null;
+function lwRender() {
+  if (!window.LetterWardrobe) return;
+  lwSpec = LetterWardrobe.outfitFor(ayahText(selectedSurah, selectedAyah));
+  LetterWardrobe.drawAvatar($("#lw-canvas"), lwSpec, 6);
+  const g = (label, ur, x, extra) =>
+    `<div class="lw-part"><canvas data-o="${x.order}"></canvas><span>${label} <span class="ur" lang="ur">${ur}</span>: ` +
+    `<b class="lw-ar" lang="ar">${x.letter}</b> ${x.name} → ${x.property}${extra || ""}</span></div>`;
+  const o = lwSpec.outerwear;
+  $("#lw-info").innerHTML =
+    `<b>${selectedSurah}:${selectedAyah}</b> · id ${lwSpec.id}` +
+    g("Top (first)", "قمیص", lwSpec.top) +
+    g("Outer (middle)", "بیرونی", o, ` · ${o.style}`) +
+    g("Bottom (last)", "پاجامہ", lwSpec.bottom) +
+    `<span class="muted">${lwSpec.stats.letters} letters · ${lwSpec.stats.words} words</span>`;
+  $("#lw-info").querySelectorAll("canvas").forEach((c) => LetterWardrobe.drawSwatch(c, +c.dataset.o, 10, 2));
+  if ($("#lw-table-wrap").open) LetterWardrobe.renderTable($("#lw-table"), [lwSpec.top.order, o.order, lwSpec.bottom.order]);
+}
+function lwStep(d) {
+  let s = surahByNum(selectedSurah), a = selectedAyah + d;
+  if (a < 1 && selectedSurah > 1) { s = surahByNum(selectedSurah - 1); a = s.ayahs; }
+  else if (a > s.ayahs && selectedSurah < 114) { s = surahByNum(selectedSurah + 1); a = 1; }
+  selectSurah(s.n, Math.min(Math.max(1, a), s.ayahs));
+}
+function initLetters() {
+  if (!$("#letters-picker")) return;
+  $("#lw-table-wrap").addEventListener("toggle", () => { if ($("#lw-table-wrap").open) lwRender(); });
+  if (window.LetterWardrobe) $("#lw-sources").textContent = "Sources: " + LetterWardrobe.data.sources.join(" · ");
+  $("#lw-prev").addEventListener("click", () => lwStep(-1));
+  $("#lw-next").addEventListener("click", () => lwStep(1));
+  $("#lw-png").addEventListener("click", () => {
+    if (!lwSpec) return;
+    const c = document.createElement("canvas");
+    LetterWardrobe.drawAvatar(c, lwSpec, 1);
+    const a = document.createElement("a");
+    a.href = c.toDataURL("image/png"); a.download = `avatar-${selectedSurah}-${selectedAyah}-${lwSpec.id}.png`; a.click();
+  });
 }
 
 /* ---------------- auto-push every 10 min, only when today's log changed ---------------- */
@@ -1291,6 +1336,7 @@ function initApprove() {
 /* ---------------- init ---------------- */
 
 (async function init() {
+  initLetters();
   initGridPicker();   // picker + auto-push don't depend on IndexedDB
   initAuto10();
   initSpeak();
