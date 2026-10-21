@@ -1032,6 +1032,7 @@ function lwRender() {
     g("Bottom (last)", "پاجامہ", lwSpec.bottom) +
     `<span class="muted">${lwSpec.stats.letters} letters · ${lwSpec.stats.words} words</span>`;
   $("#lw-info").querySelectorAll("canvas").forEach((c) => LetterWardrobe.drawSwatch(c, +c.dataset.o, 10, 2));
+  if ($("#lw-shop")) $("#lw-shop").innerHTML = LetterWardrobe.shopHTML ? LetterWardrobe.shopHTML(lwSpec) : "";  // 3 real store links, no images
   if ($("#lw-table-wrap").open) LetterWardrobe.renderTable($("#lw-table"), [lwSpec.top.order, o.order, lwSpec.bottom.order]);
 }
 function lwStep(d) {

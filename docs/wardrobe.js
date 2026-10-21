@@ -92,7 +92,24 @@
     el.innerHTML = tableHTML(highlight);
     el.querySelectorAll("canvas.lw-sw").forEach((c) => drawSwatch(c, +c.dataset.order, 12, 2));
   }
-  const api = { outfitFor, renderPixels, drawAvatar, drawSwatch, tableHTML, renderTable, letterOrders, outfitId, data: D };
+  // Real store items for an outfit (products.json via wardrobe-data.js): [top, outerwear, bottom]. Links only.
+  function productsFor(spec) {
+    const P = D.products;
+    if (!P) return [];
+    return ["top", "outerwear", "bottom"].map((s) => Object.assign({ slot: s }, P.by_property[spec[s].property][s]));
+  }
+  function shopHTML(spec) {
+    const P = D.products;
+    if (!P) return "";
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const lab = { top: "Top", outerwear: "Outer", bottom: "Bottom" };
+    const li = productsFor(spec).map((p) =>
+      `<li><b>${lab[p.slot]}</b> · ${esc(spec[p.slot].property)}: <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(p.name)}</a>` +
+      ` <span class="lw-store">${esc(p.store)} · ${esc(p.price)}</span>${p.note ? ` <span class="muted">(${esc(p.note)})</span>` : ""}</li>`).join("");
+    return `<div class="lw-shop-h">Real clothes <span class="ur" lang="ur">اصل کپڑے</span></div><ul>${li}</ul>` +
+      `<div class="muted lw-asof">Prices as of Oct 21, 2026, may change. Links only, no store photos. ${esc(P.note.replace(/^Prices as of [^.]*\. Links only \(no retailer images\)\. /, ""))}</div>`;
+  }
+  const api = { outfitFor, productsFor, shopHTML, renderPixels, drawAvatar, drawSwatch, tableHTML, renderTable, letterOrders, outfitId, data: D };
   root.LetterWardrobe = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

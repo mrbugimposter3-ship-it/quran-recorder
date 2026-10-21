@@ -27,4 +27,23 @@ const { masks, W } = D;  // head skin fully covered by hair (back of head only)
 for (let y = 0; y < 19; y++) for (let x = 0; x < W; x++)
   assert(!(masks.skin[y][x] === "1" && masks.hair[y][x] === "0"), `face risk at ${x},${y}`);
 assert.strictEqual(LW.outfitFor("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ").id, "965e3afc");
-console.log(`ok — ${n} ayahs, ${ids.size} distinct outfits, 28 letters ↔ 28 properties`);
+// Real clothes: every one of the 28 properties has a real product for each slot (84 links, no images)
+const P = D.products;
+assert(P && P.as_of === "2026-10-21" && /may change/.test(P.note));
+const urls = new Set();
+for (const r of D.letters) for (const slot of ["top", "outerwear", "bottom"]) {
+  const e = P.by_property[r.property] && P.by_property[r.property][slot];
+  assert(e, `missing product ${r.property}/${slot}`);
+  assert(/^https:\/\/[^\s"'<>]+$/.test(e.url), e.url);
+  assert(e.name && e.store && /^(CA|US)\$[\d,]+\.\d\d$/.test(e.price), JSON.stringify(e));
+  assert(!Object.keys(e).some((k) => /image|img|photo|thumb/i.test(k)), "no retailer images");
+  urls.add(e.url);
+}
+assert.strictEqual(urls.size, 84);
+const bis = LW.outfitFor("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"), pf = LW.productsFor(bis);
+assert.deepStrictEqual(pf.map((x) => x.slot), ["top", "outerwear", "bottom"]);
+for (const x of pf) assert.strictEqual(x.url, P.by_property[bis[x.slot].property][x.slot].url);
+const html = LW.shopHTML(bis);
+assert(/Prices as of Oct 21, 2026, may change/.test(html) && !/<img/i.test(html) && (html.match(/<a /g) || []).length === 3);
+assert(/rel="noopener noreferrer nofollow"/.test(html));
+console.log(`ok — ${n} ayahs, ${ids.size} distinct outfits, 28 letters ↔ 28 properties, ${urls.size} real product links`);
