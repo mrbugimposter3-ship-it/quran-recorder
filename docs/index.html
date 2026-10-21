@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=ghost1">
+<link rel="stylesheet" href="styles.css?v=letters2">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,6 +45,7 @@
           <button data-mode="approve" class="pm">✅ Approve <span class="ur" lang="ur">منظوری</span></button>
           <button data-mode="geronimo" class="pm">📚 Geronimo <span class="ur" lang="ur">جیرونیمو</span></button>
           <button data-mode="pair" class="pm">2️⃣ 2 Ayahs <span class="ur" lang="ur">دو آیات</span></button>
+          <button data-mode="letters" class="pm">🔤 Letters <span class="ur" lang="ur">حروف</span></button>
           <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
         </div>
         <form id="any-form" class="any-form">
@@ -90,6 +91,25 @@
             <button id="seq-next" class="seq-next">Next ▶ <span class="ur" lang="ur">اگلا</span></button>
           </div>
           <div id="seq-out" class="seq-out" dir="ltr"></div>
+        </div>
+        <div id="letters-picker" class="letters-picker hidden">
+          <div class="muted">Letter Wardrobe: each of the 28 letters has one fixed clothing property, from tajweed phonetics (sifat choose the fabric, makhraj chooses the colour, throat to lips; Ibn al-Jazari). First letter is the top, middle letter the outerwear, last letter the bottom. Letter sounds only; it implies nothing about meaning. Generic figure, seen from behind, no face.
+            <span class="ur" lang="ur">ہر حرف کا ایک لباس: صفات سے کپڑا، مخرج سے رنگ۔ معنی سے کوئی تعلق نہیں۔</span></div>
+          <div class="lw-stage">
+            <canvas id="lw-canvas" width="288" height="384" aria-label="Letter-pattern avatar"></canvas>
+            <div id="lw-info" class="lw-info" dir="ltr"></div>
+          </div>
+          <div id="lw-shop" class="lw-shop" dir="ltr"></div>
+          <div class="lw-nav">
+            <button id="lw-prev">◀ Prev <span class="ur" lang="ur">پچھلا</span></button>
+            <button id="lw-png">⬇ PNG <span class="ur" lang="ur">تصویر</span></button>
+            <button id="lw-next" class="seq-next">Next ▶ <span class="ur" lang="ur">اگلا</span></button>
+          </div>
+          <details id="lw-table-wrap" class="lw-details">
+            <summary>28 letters → 28 properties <span class="ur" lang="ur">۲۸ حروف، ۲۸ لباس</span></summary>
+            <div id="lw-table" class="lw-wrap"></div>
+            <div id="lw-sources" class="muted"></div>
+          </details>
         </div>
         <div id="approve-picker" class="approve-picker hidden">
           <div id="ap-title" class="ap-title"></div>
@@ -278,6 +298,8 @@
 <script src="sequences.js?v=ghost1"></script>
 <script src="approve.js?v=ghost1"></script>
 <script src="geronimo-books.js?v=ghost1"></script>
-<script src="app.js?v=ghost1"></script>
+<script src="wardrobe-data.js?v=letters2"></script>
+<script src="wardrobe.js?v=letters2"></script>
+<script src="app.js?v=letters2"></script>
 </body>
 </html>
