@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-21",
+  "exportedAt": "2026-10-21T11:12:44.468Z",
+  "entries": [
+    {
+      "type": "ayah-stamp",
+      "surah": 39,
+      "ayah": 21,
+      "global": 4079,
+      "id": "mvi0jijemuerek",
+      "ts": "2026-10-21T11:12:44.186Z",
+      "via": "approve",
+      "seq": "fib",
+      "term": 54
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 43,
+      "ayah": 39,
+      "global": 4364,
+      "id": "mvi0jijg49almj",
+      "ts": "2026-10-21T11:12:44.188Z",
+      "via": "approve",
+      "seq": "fib",
+      "term": 55
+    }
+  ]
+}
