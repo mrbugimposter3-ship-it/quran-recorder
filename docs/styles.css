@@ -370,3 +370,13 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .lw-store{opacity:.85;white-space:nowrap}
 .lw-asof{font-size:.75rem}
 .lw-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:middle}
+
+/* ---- spending in Allah's cause (v1.3.2) + tools footer ---- */
+.spend{border-color:#d4af37}
+.spend h2 .ar{font-family:"Amiri","Scheherazade New",serif;font-size:1.05em;margin-inline-start:.3em}
+.spend-ar{font-family:"Amiri","Scheherazade New","Traditional Arabic",serif;font-size:1.5rem;line-height:2.1;text-align:right;margin:.4rem 0}
+.spend-ref{color:#d4af37;font-weight:600;margin:.2rem 0}
+.spend-en{font-size:.95rem;margin:.3rem 0}
+.spend-note{font-size:.8rem}
+.tools-used{margin-top:1.2rem;padding-top:.6rem;border-top:1px dashed var(--border);font-size:.8rem}
+.tools-used a{color:var(--accent2)}

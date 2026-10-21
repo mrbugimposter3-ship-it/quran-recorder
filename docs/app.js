@@ -1041,6 +1041,20 @@ function lwStep(d) {
   else if (a > s.ayahs && selectedSurah < 114) { s = surahByNum(selectedSurah + 1); a = 1; }
   selectSurah(s.n, Math.min(Math.max(1, a), s.ayahs));
 }
+// 🤲 Spending in Allah's cause — one ayah per local day (spend.js). Ayat only; the referral link is in the footer.
+function initSpend() {
+  const S = window.QSpend; if (!S || !$("#spend")) return;
+  const render = () => {
+    const it = S.forDate(new Date());
+    const s = (window.SURAHS || []).find((x) => x.n === it.surah);
+    $("#spend-ar").textContent = S.arabic(it, window.QURAN_TEXT);
+    $("#spend-ref").textContent = (s ? s.name + " · " + s.ar + " · " : "") + S.ref(it);
+    $("#spend-en").textContent = it.en;
+  };
+  render();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+}
+
 function initLetters() {
   if (!$("#letters-picker")) return;
   $("#lw-table-wrap").addEventListener("toggle", () => { if ($("#lw-table-wrap").open) lwRender(); });
@@ -1337,6 +1351,7 @@ function initApprove() {
 /* ---------------- init ---------------- */
 
 (async function init() {
+  initSpend();
   initLetters();
   initGridPicker();   // picker + auto-push don't depend on IndexedDB
   initAuto10();

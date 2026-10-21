@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=letters2">
+<link rel="stylesheet" href="styles.css?v=spend1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -283,10 +283,19 @@
       <div id="gh-status" class="muted"></div>
     </div>
   </section>
+  <!-- ============ SPENDING IN ALLAH'S CAUSE (ayat only — no links here) ============ -->
+  <section id="spend" class="card spend" aria-labelledby="spend-h">
+    <h2 id="spend-h">🤲 Spending in Allah's cause <span class="ar" lang="ar">«الإنفاق في سبيل الله»</span> <span class="ur" lang="ur">اللہ کی راہ میں خرچ</span></h2>
+    <p id="spend-ar" class="spend-ar" lang="ar" dir="rtl"></p>
+    <p id="spend-ref" class="spend-ref"></p>
+    <p id="spend-en" class="spend-en"></p>
+    <p class="muted spend-note">One ayah a day, changes at midnight <span class="ur" lang="ur">روزانہ ایک آیت</span> · English: Pickthall (1930, public domain)</p>
+  </section>
 </main>
 
 <footer>
   <span>All data stays in your browser (IndexedDB + localStorage). Total verses: <strong>6236</strong>.</span>
+  <div class="tools-used">Tools we use: <a href="https://postiz.pro/mr-bug" target="_blank" rel="noopener sponsored">Postiz</a> <span class="muted">(referral link)</span></div>
 </footer>
 
 <script src="surah-data.js"></script>
@@ -300,6 +309,7 @@
 <script src="geronimo-books.js?v=ghost1"></script>
 <script src="wardrobe-data.js?v=letters2"></script>
 <script src="wardrobe.js?v=letters2"></script>
-<script src="app.js?v=letters2"></script>
+<script src="spend.js?v=spend1"></script>
+<script src="app.js?v=spend1"></script>
 </body>
 </html>

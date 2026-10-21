@@ -127,3 +127,9 @@ The recognized pick is shown with a **✓ Stamp** button (or it is stamped right
   - The sequence and the position in each sequence are remembered.
 - Sequences: natural, Fibonacci, Lucas, primes, squares, cubes, cube roots (`⌊1000·∛n⌋`, i.e. ∛n to 3 decimals; plain `⌊∛n⌋` would repeat the same ayah ~3k² times in a row), triangular, pentagonal, hexagonal, tetrahedral, Catalan, powers of 2, factorials, π / φ / e digits as running numbers (3, 31, 314…), golden angle `⌊n·137.508⌋`, Padovan, perfect numbers (from the first 20 Mersenne primes), Collatz from a seed.
 - All arithmetic uses BigInt, so huge terms (factorials, 2ⁿ, digit strings) are exact. Tests: `node tools/test-sequences.js`.
+
+## 🤲 Spending in Allah's cause — «الإنفاق في سبيل الله» (v1.3.2)
+
+A card below the tabs (visible on every tab) shows one ayah per day, rotating by local date through 2:261, 2:245, 2:274, 9:60, 9:103, 57:7, 57:11, 57:18, 61:10–11, 63:10, 64:16 and 3:92. The Arabic is the bundled Uthmani text (checked against api.alquran.cloud `quran-uthmani`; only pause marks differ). English is Pickthall (1930, public domain). Logic in `spend.js`; tests: `node tools/test-spend.js`.
+
+The footer has a separate "Tools we use: Postiz (referral link)" line (`rel="noopener sponsored"`). It is kept apart from the ayah card on purpose.

@@ -1,9 +1,9 @@
 /* Quran Recorder service worker — caches the app shell only.
    Bump VERSION with every release so phones pick up the new files. */
-const VERSION = "v1.3.1";
+const VERSION = "v1.3.2";
 const CACHE = "quran-recorder-" + VERSION;
 const SHELL = [
-  "./", "./index.html", "./styles.css?v=letters2", "./app.js?v=letters2", "./wardrobe-data.js?v=letters2", "./wardrobe.js?v=letters2", "./speak-parse.js?v=ghost1", "./sequences.js?v=ghost1", "./approve.js?v=ghost1", "./geronimo-books.js?v=ghost1",
+  "./", "./index.html", "./styles.css?v=spend1", "./app.js?v=spend1", "./spend.js?v=spend1", "./wardrobe-data.js?v=letters2", "./wardrobe.js?v=letters2", "./speak-parse.js?v=ghost1", "./sequences.js?v=ghost1", "./approve.js?v=ghost1", "./geronimo-books.js?v=ghost1",
   "./surah-data.js", "./quran-text.js", "./number-words.js", "./script-builder.js", "./word-translations.js",
   "./tree-picker.html?v=ghost1", "./manifest.json",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-192.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"
