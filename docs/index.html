@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=spend1">
+<link rel="stylesheet" href="styles.css?v=books1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,7 +43,7 @@
           <button data-mode="speak" class="pm">🎤 Speak</button>
           <button data-mode="seq" class="pm">🔢 Seq <span class="ur" lang="ur">ترتیب</span></button>
           <button data-mode="approve" class="pm">✅ Approve <span class="ur" lang="ur">منظوری</span></button>
-          <button data-mode="geronimo" class="pm">📚 Geronimo <span class="ur" lang="ur">جیرونیمو</span></button>
+          <button data-mode="geronimo" class="pm">📚 Books <span class="ur" lang="ur">کتابیں</span></button>
           <button data-mode="pair" class="pm">2️⃣ 2 Ayahs <span class="ur" lang="ur">دو آیات</span></button>
           <button data-mode="letters" class="pm">🔤 Letters <span class="ur" lang="ur">حروف</span></button>
           <label class="check onetap"><input id="pick-onetap" type="checkbox"> One-tap stamp</label>
@@ -116,7 +116,9 @@
           <label>Sequence <span class="ur" lang="ur">ترتیب منتخب کریں</span></label>
           <select id="ap-seq"></select>
           <div id="ap-info" class="muted" dir="ltr"></div>
-          <label id="ap-book-wrap" class="check"><input id="ap-book" type="checkbox"> 📚 Show Geronimo pairing <span class="ur" lang="ur">جیرونیمو جوڑی دکھائیں</span></label>
+          <label id="ap-book-wrap" class="check"><input id="ap-book" type="checkbox"> 📚 Show book pairing <span class="ur" lang="ur">کتاب کی جوڑی دکھائیں</span></label>
+          <label id="ap-work-wrap">📚 Book <span class="ur" lang="ur">کتاب منتخب کریں</span><select id="ap-work"></select></label>
+          <div id="bk-current" class="bk-current"></div>
           <div id="ap-cards" class="ap-cards"></div>
           <div class="ap-nav">
             <button id="ap-no" class="ap-no">❌ No <span class="ur" lang="ur">نہیں</span></button>
@@ -307,9 +309,11 @@
 <script src="sequences.js?v=ghost1"></script>
 <script src="approve.js?v=ghost1"></script>
 <script src="geronimo-books.js?v=ghost1"></script>
+<script src="books-data.js?v=books1"></script>
+<script src="books.js?v=books1"></script>
 <script src="wardrobe-data.js?v=letters2"></script>
 <script src="wardrobe.js?v=letters2"></script>
 <script src="spend.js?v=spend1"></script>
-<script src="app.js?v=spend1"></script>
+<script src="app.js?v=books1"></script>
 </body>
 </html>

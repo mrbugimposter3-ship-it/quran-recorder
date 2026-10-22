@@ -341,6 +341,9 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .ap-no{background:#7a1f1f;color:#fff;border:2px solid #d4af37}
 .ap-sub{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.ap-sub label{display:flex;flex-direction:column}.ap-sub input{min-height:40px;width:7em}
 .ap-nobook{border:1px dashed #d4af37;border-radius:8px;padding:4px 8px;font-size:.85em}
+.bk-current{display:flex;flex-direction:column;gap:4px}.bk-cur-ref{font-size:.85em}
+#ap-work-wrap{display:flex;flex-direction:column}#ap-work{min-height:42px}
+.bk-ar{font-size:1.15em;line-height:1.8}.bk-line{font-style:italic;margin-top:3px;border-left:3px solid #d4af37;padding-left:6px}.bk-src{font-style:normal;font-size:.85em}.bk-ja,.bk-en{font-size:.85em}
 .ap-book.ghost{background:rgba(90,110,140,.18)}.ap-ghost{display:inline-block;font-size:.8em;font-weight:600;border:1px solid currentColor;border-radius:6px;padding:0 6px;margin-bottom:2px}
 
 /* 🔤 Letters mode (letter-pattern avatar) */

@@ -145,6 +145,7 @@ function refreshSelection() {
   renderWordMap();
   syncSurahStrip();
   syncAyahDial();
+  if (typeof bkRenderCurrent === "function") bkRenderCurrent();
   $("#rec-surah-info").textContent =
     `${s.name} spans global verses ${s.start}–${s.end}.`;
   if (!$("#letters-picker").classList.contains("hidden")) lwRender();
@@ -689,7 +690,7 @@ $("#log-date").addEventListener("change", renderLog);
 function describeEntry(e) {
   if (e.type === "ayah-stamp") {
     const s = surahByNum(e.surah);
-    const via = e.via === "approve" ? ` — ✅ approved${e.seq && QSeq.byId[e.seq] ? ` (${QSeq.byId[e.seq].en} a(${e.term}))` : ""}${e.geronimo ? ` · 📚 #${e.geronimo.book}${e.geronimo.chapter ? " ch " + e.geronimo.chapter : ""}${e.geronimo.kirinomori ? " 👻" : ""}` : ""}` : "";
+    const via = e.via === "approve" ? ` — ✅ approved${e.seq && QSeq.byId[e.seq] ? ` (${QSeq.byId[e.seq].en} a(${e.term}))` : ""}${e.geronimo ? ` · 📚 #${e.geronimo.book}${e.geronimo.chapter ? " ch " + e.geronimo.chapter : ""}${e.geronimo.kirinomori ? " 👻" : ""}` : ""}${e.book && QBooks.byId[e.book.work] ? ` · ${QBooks.byId[e.book.work].icon} ${apEsc(QBooks.byId[e.book.work].en)} #${e.book.unit}${e.book.subLabel ? " · " + apEsc(e.book.subLabel) : ""}` : ""}` : "";
     return `⏱ Timestamped <strong>${s.n}. ${s.name}</strong> ayah ${e.ayah} (verse ${e.global})${via}`;
   }
   if (e.type === "recitation") {
@@ -1286,6 +1287,40 @@ function apMode() { const m = localStorage.getItem(PICK_KEY); return AP_MODES.in
 function apCursor(st) { st.apos = st.apos || {}; return st.apos[seqKey(st)] || ((st.pos[seqKey(st)] || 0) + 1); }
 function apSetCursor(k) { const st = seqState(); st.apos = st.apos || {}; st.apos[seqKey(st)] = Math.max(1, Math.floor(k) || 1); seqSave(st); }
 function apShowBook(m) { return m === "geronimo" || localStorage.getItem(AP_BOOK_KEY) === "1"; }
+/* 📚 Books کتابیں picker: Geronimo (unchanged) + the other works from books-data.js */
+const BK_WORK_KEY = "quranRecorder.books.work";
+function bkWork() { const w = localStorage.getItem(BK_WORK_KEY); return QBooks.byId[w] ? w : "geronimo"; }
+function bkCardHtml(c) {
+  const w = bkWork();
+  if (w === "geronimo") {
+    const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah);
+    if (g.none) return `<div class="ap-nobook muted" dir="ltr">📚 No pairing for this surah <span class="ur" lang="ur">اس سورت کی کوئی جوڑی نہیں</span></div>`;
+    return `<div class="ap-book${g.theme === "ghost" ? " ghost" : ""}" dir="ltr">${g.theme === "ghost" ? '<div class="ap-ghost">👻 kirinomori</div>' : ""}<div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
+        <div><strong>📚 Geronimo Stilton #${g.book}${g.chapter ? ` · chapter ${g.chapter}/${g.chapters}` : ""}</strong> — <em>${apEsc(g.title)}</em></div>
+        <div class="ap-sum">${apEsc(g.summary)}</div></div>`;
+  }
+  const W = QBooks.byId[w], p = QBooks.pair(w, c.surah, c.ayah);
+  const isAr = W.id === "fusus";   // Fusus title is the Arabic heading itself
+  return `<div class="ap-book bk-${w}" dir="ltr"><div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
+      <div><strong>${W.icon} ${apEsc(W.en)} #${p.unit}/${p.N}${p.label ? ` · ${apEsc(p.label)}` : ""}${p.subLabel ? ` · ${apEsc(p.subLabel)}` : ""}</strong>${isAr ? "" : ` — <em>${apEsc(p.title)}</em>`}</div>
+      ${p.ar ? `<div class="bk-ar" dir="rtl" lang="ar">${apEsc(p.ar)}</div>` : ""}
+      ${isAr && p.en ? `<div class="muted bk-en">${apEsc(p.en)}</div>` : ""}
+      ${p.ja ? `<div class="bk-ja muted" lang="ja">${apEsc(p.ja)}</div>` : ""}
+      ${p.summary ? `<div class="ap-sum">${apEsc(p.summary)}</div>` : ""}
+      ${p.line ? `<div class="bk-line" dir="auto">“${apEsc(p.line)}”${p.lineSource ? ` <span class="muted bk-src">— ${apEsc(p.lineSource)}</span>` : ""}</div>` : ""}</div>`;
+}
+function bkLogExtra(c) {
+  const w = bkWork();
+  if (w === "geronimo") { const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah); if (g.none) return null; const x = { book: g.book }; if (g.chapter) x.chapter = g.chapter; if (g.theme === "ghost") x.kirinomori = true; return { geronimo: x }; }
+  const p = QBooks.pair(w, c.surah, c.ayah), x = { work: w, unit: p.unit };
+  if (p.sub) { x.sub = p.sub; x.subLabel = p.subLabel; }
+  return { book: x };
+}
+function bkRenderCurrent() {
+  const el = $("#bk-current"); if (!el || $("#approve-picker").classList.contains("hidden") || !apShowBook(apMode())) { if (el) el.innerHTML = ""; return; }
+  const c = { surah: selectedSurah, ayah: selectedAyah, global: globalVerse(selectedSurah, selectedAyah) };
+  el.innerHTML = `<div class="bk-cur-ref muted" dir="ltr">📍 Current ayah ${c.surah}:${c.ayah} <span class="ur" lang="ur">موجودہ آیت</span></div>` + bkCardHtml(c);
+}
 let apShown = [];
 function apRender() {
   const sel = $("#ap-seq");
@@ -1294,10 +1329,15 @@ function apRender() {
   sel.value = st.id;
   $("#ap-k").value = k;
   $("#ap-title").innerHTML = m === "pair" ? `2️⃣ Two ayahs — Yes logs both, No skips both <span class="ur" lang="ur">ہاں دونوں درج، نہیں دونوں چھوڑیں</span>`
-    : m === "geronimo" ? `📚 Geronimo pairing — Yes logs the ayah <span class="ur" lang="ur">ہاں آیت درج کرتا ہے</span>`
+    : m === "geronimo" ? `📚 Books pairing — Yes logs the ayah <span class="ur" lang="ur">کتابیں · ہاں آیت درج کرتا ہے</span>`
     : `✅ Approve next ayah — Yes logs, No skips <span class="ur" lang="ur">ہاں درج، نہیں چھوڑیں</span>`;
   $("#ap-book-wrap").classList.toggle("hidden", m === "geronimo");
   $("#ap-book").checked = book;
+  const ws = $("#ap-work");
+  if (!ws.options.length) ws.innerHTML = QBooks.WORKS.map((w) => `<option value="${w.id}">${w.icon} ${apEsc(w.en)}${w.ur ? " · " + w.ur : ""}</option>`).join("");
+  ws.value = bkWork();
+  $("#ap-work-wrap").classList.toggle("hidden", !book);
+  bkRenderCurrent();
   $("#ap-info").textContent = `${QSeq.byId[st.id].en}${st.off ? ` · offset ${st.off}` : ""}${QSeq.byId[st.id].seed ? ` · seed ${st.seed}` : ""} — change offset/seed in 🔢 Seq`;
   try { apShown = QApprove.step(QSeq, SURAHS, st, k, pair); }
   catch (err) { apShown = []; $("#ap-cards").textContent = "✗ " + err.message; return; }
@@ -1308,13 +1348,7 @@ function apRender() {
     let h = `<div class="ap-card"><div class="ap-ref">${c.surah}:${c.ayah} · ${apEsc(s.ar)} · ${apEsc(s.name)}${done.has(c.surah + ":" + c.ayah) ? ' <span class="ap-done">✓ logged today</span>' : ""}</div>
       <div class="ap-ar" dir="rtl" lang="ar">${apEsc(ayahText(c.surah, c.ayah) || "…")}</div>
       <div class="muted ap-meta" dir="ltr">a(${c.k}) = ${apEsc(t)} → #${c.global}</div>`;
-    if (book) {
-      const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah);
-      if (g.none) h += `<div class="ap-nobook muted" dir="ltr">📚 No pairing for this surah <span class="ur" lang="ur">اس سورت کی کوئی جوڑی نہیں</span></div>`;
-      else h += `<div class="ap-book${g.theme === "ghost" ? " ghost" : ""}" dir="ltr">${g.theme === "ghost" ? '<div class="ap-ghost">👻 kirinomori</div>' : ""}<div class="ap-tag" dir="rtl" lang="ar">مطابقة عددية للتسلية فقط · number pairing, just for fun</div>
-        <div><strong>📚 Geronimo Stilton #${g.book}${g.chapter ? ` · chapter ${g.chapter}/${g.chapters}` : ""}</strong> — <em>${apEsc(g.title)}</em></div>
-        <div class="ap-sum">${apEsc(g.summary)}</div></div>`;
-    }
+    if (book) h += bkCardHtml(c);
     return h + "</div>";
   }).join("");
 }
@@ -1324,7 +1358,7 @@ function apDecide(yes) {
   if (yes) {
     for (const c of apShown) {
       const extra = { id: uid(), ts: new Date().toISOString(), via: "approve", seq: st.id, term: c.k };
-      if (book) { const g = QApprove.geronimo(GERONIMO_BOOKS, c.surah, c.ayah); if (!g.none) { extra.geronimo = { book: g.book }; if (g.chapter) extra.geronimo.chapter = g.chapter; if (g.theme === "ghost") extra.geronimo.kirinomori = true; } }
+      if (book) { const bx = bkLogExtra(c); if (bx) Object.assign(extra, bx); }
       addLogEntry(QApprove.logEntry(c, extra));
     }
     st.apos = st.apos || {}; st.apos[seqKey(st)] = k;   // pin the cursor before moving 🔢 Seq's position
@@ -1345,6 +1379,7 @@ function initApprove() {
   $("#ap-back").addEventListener("click", () => { apSetCursor(QApprove.back(apCursor(seqState()), apMode() === "pair")); $("#ap-status").textContent = "◀ Back one step (log unchanged)"; apRender(); });
   $("#ap-k").addEventListener("change", () => { apSetCursor(Number($("#ap-k").value)); apRender(); });
   $("#ap-book").addEventListener("change", (e) => { localStorage.setItem(AP_BOOK_KEY, e.target.checked ? "1" : "0"); apRender(); });
+  $("#ap-work").addEventListener("change", (e) => { localStorage.setItem(BK_WORK_KEY, e.target.value); apRender(); });
   if (AP_MODES.includes(localStorage.getItem(PICK_KEY))) apRender();
 }
 
