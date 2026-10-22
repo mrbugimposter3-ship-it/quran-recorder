@@ -76,7 +76,7 @@ const html = fs.readFileSync(__dirname + "/../docs/index.html", "utf8"), sw = fs
 const refs = [...html.matchAll(/(?:src|href)="([\w.-]+\.(?:js|css)\?v=[\w.-]+)"/g)].map((m) => "./" + m[1]);
 eq("every ?v= asset is in the SW shell", refs.filter((r) => !sw.includes(`"${r}"`)).join(" ") || "ok", "ok");
 eq("books files versioned", ["books-data.js?v=books1", "books.js?v=books1", "app.js?v=books1"].every((r) => html.includes(r) && sw.includes(r)), true);
-eq("SW version", /const VERSION = "v1\.4\.0"/.test(sw), true);
+eq("SW version", /const VERSION = "v1\.5\.0"/.test(sw), true);
 eq("Books button", /📚 Books <span class="ur" lang="ur">کتابیں<\/span>/.test(html), true);
 
 // books-data.js matches the canonical JSON (when the tables are on this machine)

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=books1">
+<link rel="stylesheet" href="styles.css?v=finder1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
 <body>
 <header>
   <h1>📖 Quran Recorder</h1>
-  <p class="subtitle">Surah &amp; Ayah recorder · Scroll finder · 6,236 verses · Kalima tracker</p>
+  <p class="subtitle">Surah &amp; Ayah recorder · Scroll finder · Ayah finder · 6,236 verses · Kalima tracker</p>
   <div id="install-bar" class="install-bar">
     <button id="btn-install" class="hidden">📲 Install app</button>
     <div id="ios-install" class="ios-hint hidden">📲 iPhone: tap <b>Share</b> <span aria-hidden="true">⎋</span> → <b>Add to Home Screen</b>. <button id="ios-x" aria-label="Close">✕</button></div>
@@ -25,6 +25,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="recorder">🎙 Recorder</button>
     <button class="tab" data-tab="finder">📜 Scroll Finder</button>
+    <button class="tab" data-tab="ayahfind">🔎 Ayah Finder <span class="ur" lang="ur">آیت تلاش</span></button>
     <button class="tab" data-tab="kalima">🕋 Kalima</button>
     <button class="tab" data-tab="log">🗓 Daily Log</button>
   </nav>
@@ -202,6 +203,28 @@
     </div>
   </section>
 
+  <!-- ============ AYAH FINDER (English text → closest ayat by meaning) ============ -->
+  <section id="tab-ayahfind" class="panel">
+    <div class="card af-card">
+      <h2>🔎 Ayah Finder <span class="ur" lang="ur">آیت تلاش</span></h2>
+      <p class="muted">Type or paste any English text, like a clothes description, and get the 5 closest ayat by meaning.
+        <span class="ur" lang="ur">کوئی بھی انگریزی جملہ لکھیں، معنی کے لحاظ سے قریب ترین ۵ آیات ملیں گی۔</span></p>
+      <textarea id="af-text" class="af-text" rows="3" placeholder="e.g. soft green wool coat · مثال: نرم سبز اونی کوٹ"></textarea>
+      <div class="af-row">
+        <button id="af-go">🔎 Find <span class="ur" lang="ur">تلاش کریں</span></button>
+        <span class="af-egs">Try <span class="ur" lang="ur">آزمائیں</span>:
+          <button class="af-eg" data-q="soft green wool coat">soft green wool coat</button>
+          <button class="af-eg" data-q="silk dress">silk dress</button>
+          <button class="af-eg" data-q="gold bracelet">gold bracelet</button>
+          <button class="af-eg" data-q="rain and gardens">rain and gardens</button>
+        </span>
+      </div>
+      <div id="af-status" class="muted af-status" aria-live="polite"></div>
+      <div id="af-results" class="af-results"></div>
+      <p class="muted af-note">Arabic: Uthmani (Tanzil) · English: Pickthall (1930, public domain) · Copy gives Arabic — English — reference <span class="ur" lang="ur">کاپی: عربی — انگریزی — حوالہ</span></p>
+    </div>
+  </section>
+
   <!-- ============ KALIMA ============ -->
   <section id="tab-kalima" class="panel">
     <div class="card">
@@ -315,5 +338,6 @@
 <script src="wardrobe.js?v=letters2"></script>
 <script src="spend.js?v=spend1"></script>
 <script src="app.js?v=books1"></script>
+<script src="ayah-finder.js?v=finder1"></script>
 </body>
 </html>

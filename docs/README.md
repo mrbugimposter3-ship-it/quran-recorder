@@ -25,6 +25,9 @@ A zero-dependency static web app for recording Quran recitation throughout the d
 - Scrollable list of all 114 surahs with Arabic names, ayah counts, and global verse ranges.
 - Search by name or number; type any verse **1–6236** to jump straight to it.
 
+### 🔎 Ayah Finder آیت تلاش (v1.5.0)
+Type or paste any English text (for example a clothes description like "soft green wool coat") and get the 5 closest ayat by meaning, each with surah name, Uthmani Arabic, Pickthall's English (1930, public domain), a match score and a 📋 Copy button that copies `Arabic — English (Pickthall) — Quran S:A`. All 6236 Pickthall ayat were embedded offline with `Xenova/all-MiniLM-L6-v2` (q8) and stored as int8 (`docs/ayah-finder/emb-minilm-int8.bin`, 2.4 MB; text in `pickthall.json`, 0.8 MB). The query is embedded on the phone with transformers.js 3.8.1, lazy-loaded only when the tab opens and cached by the service worker with the ~23 MB model. Score = 0.5·cosine + 0.5·keyword boost (concrete words + synonyms such as coat → garment/raiment, leather → hides). If the model can't load it falls back to the offline keyword match. Rebuild the data with `tools/build-ayah-embeddings.mjs`; test with `node tools/test-ayah-finder.js` (add `AF_TJS=<folder with @huggingface/transformers>` for the semantic checks).
+
 ### 🕋 Kalima Tracker
 - A complete kalima is the set **1 · 6 · 8 · 10 · 12 · 23 · 24 · 27**.
 - Choose which surah counts as **surah 1** (presets: 27, 24, 12, 6); the sequence shifts by that offset (wrapping around 114):
