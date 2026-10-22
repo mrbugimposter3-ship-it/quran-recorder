@@ -1,6 +1,6 @@
 {
   "date": "2026-10-22",
-  "exportedAt": "2026-10-22T20:05:57.864Z",
+  "exportedAt": "2026-10-22T20:08:00.441Z",
   "entries": [
     {
       "id": "mvjti2xtafs4n3",
@@ -107,6 +107,14 @@
       "geronimo": {
         "book": 25
       }
+    },
+    {
+      "id": "mvjz3pw7ia98t0",
+      "type": "ayah-stamp",
+      "ts": "2026-10-22T20:07:59.959Z",
+      "surah": 14,
+      "ayah": 5,
+      "global": 1755
     }
   ]
 }
