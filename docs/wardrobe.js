@@ -98,6 +98,21 @@
     if (!P) return [];
     return ["top", "outerwear", "bottom"].map((s) => Object.assign({ slot: s }, P.by_property[spec[s].property][s]));
   }
+  // Plain store search links (no affiliate codes, no images): Temu + Macy's for each slot's "<fabric> <garment>".
+  const GARMENT = { top: "top", bottom: "pants", longcoat: "long coat", jacket: "jacket", vest: "vest" };
+  const FABRIC = { stripes: "striped", "polka dot": "polka dot" };
+  function searchQuery(spec, slot) {
+    const g = spec[slot], kind = slot === "outerwear" ? GARMENT[g.style] || "jacket" : GARMENT[slot];
+    return `${FABRIC[g.property] || g.property} ${kind}`;
+  }
+  function searchLinks(spec, slot) {
+    const q = searchQuery(spec, slot), e = encodeURIComponent(q);
+    return {
+      query: q,
+      temu: `https://www.temu.com/search_result.html?search_key=${e}`,
+      macys: `https://www.macys.com/shop/search?keyword=${e}`,
+    };
+  }
   function shopHTML(spec) {
     const P = D.products;
     if (!P) return "";
@@ -105,11 +120,15 @@
     const lab = { top: "Top", outerwear: "Outer", bottom: "Bottom" };
     const li = productsFor(spec).map((p) =>
       `<li><b>${lab[p.slot]}</b> · ${esc(spec[p.slot].property)}: <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(p.name)}</a>` +
-      ` <span class="lw-store">${esc(p.store)} · ${esc(p.price)}</span>${p.note ? ` <span class="muted">(${esc(p.note)})</span>` : ""}</li>`).join("");
+      ` <span class="lw-store">${esc(p.store)} · ${esc(p.price)}</span>${p.note ? ` <span class="muted">(${esc(p.note)})</span>` : ""}` +
+      (() => { const L = searchLinks(spec, p.slot); return `<div class="lw-search">Search “${esc(L.query)}”: ` +
+        `<a href="${esc(L.temu)}" target="_blank" rel="noopener noreferrer nofollow">Temu <span class="ur" lang="ur">تیمو</span></a> · ` +
+        `<a href="${esc(L.macys)}" target="_blank" rel="noopener noreferrer nofollow">Macy's <span class="ur" lang="ur">میسیز</span></a></div>`; })() +
+      `</li>`).join("");
     return `<div class="lw-shop-h">Real clothes <span class="ur" lang="ur">اصل کپڑے</span></div><ul>${li}</ul>` +
-      `<div class="muted lw-asof">Prices as of Oct 21, 2026, may change. Links only, no store photos. ${esc(P.note.replace(/^Prices as of [^.]*\. Links only \(no retailer images\)\. /, ""))}</div>`;
+      `<div class="muted lw-asof">Prices as of Oct 21, 2026, may change. Links only, no store photos. Temu and Macy's buttons are plain store searches. ${esc(P.note.replace(/^Prices as of [^.]*\. Links only \(no retailer images\)\. /, ""))}</div>`;
   }
-  const api = { outfitFor, productsFor, shopHTML, renderPixels, drawAvatar, drawSwatch, tableHTML, renderTable, letterOrders, outfitId, data: D };
+  const api = { outfitFor, productsFor, searchQuery, searchLinks, shopHTML, renderPixels, drawAvatar, drawSwatch, tableHTML, renderTable, letterOrders, outfitId, data: D };
   root.LetterWardrobe = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

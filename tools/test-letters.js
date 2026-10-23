@@ -44,6 +44,19 @@ const bis = LW.outfitFor("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ �
 assert.deepStrictEqual(pf.map((x) => x.slot), ["top", "outerwear", "bottom"]);
 for (const x of pf) assert.strictEqual(x.url, P.by_property[bis[x.slot].property][x.slot].url);
 const html = LW.shopHTML(bis);
-assert(/Prices as of Oct 21, 2026, may change/.test(html) && !/<img/i.test(html) && (html.match(/<a /g) || []).length === 3);
+assert(/Prices as of Oct 21, 2026, may change/.test(html) && !/<img/i.test(html) && (html.match(/<a /g) || []).length === 9);
+// Temu + Macy's plain search links per slot: no affiliate codes, encoded "<fabric> <garment>" query
+for (const slot of ["top", "outerwear", "bottom"]) {
+  const L = LW.searchLinks(bis, slot), e = encodeURIComponent(L.query);
+  assert.strictEqual(L.temu, `https://www.temu.com/search_result.html?search_key=${e}`);
+  assert.strictEqual(L.macys, `https://www.macys.com/shop/search?keyword=${e}`);
+  assert(!/ref|aff|utm|partner/i.test(L.temu + L.macys));
+  assert(html.includes(L.temu.replace(/&/g, "&amp;")) && html.includes(L.macys));
+}
+assert(/تیمو/.test(html) && /میسیز/.test(html));
+for (const r of D.letters) for (const st of ["longcoat", "jacket", "vest"]) {
+  const q = LW.searchQuery({ outerwear: { property: r.property, style: st } }, "outerwear");
+  assert(q && !/undefined/.test(q));
+}
 assert(/rel="noopener noreferrer nofollow"/.test(html));
 console.log(`ok — ${n} ayahs, ${ids.size} distinct outfits, 28 letters ↔ 28 properties, ${urls.size} real product links`);
