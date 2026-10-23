@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "exportedAt": "2026-10-23T16:00:52.036Z",
+  "exportedAt": "2026-10-23T16:07:47.264Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -230,6 +230,34 @@
       "surah": 7,
       "ayah": 82,
       "global": 1036
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 85,
+      "ayah": 2,
+      "global": 5911,
+      "id": "mvl5ylqeym9r5f",
+      "ts": "2026-10-23T16:07:44.774Z",
+      "via": "approve",
+      "seq": "primes",
+      "term": 2,
+      "geronimo": {
+        "book": 85
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 85,
+      "ayah": 4,
+      "global": 5913,
+      "id": "mvl5ylqhtfoqww",
+      "ts": "2026-10-23T16:07:44.777Z",
+      "via": "approve",
+      "seq": "primes",
+      "term": 3,
+      "geronimo": {
+        "book": 85
+      }
     }
   ]
 }
