@@ -93,8 +93,8 @@ eq("no sub without ayah", B.pair("artofwar", 1).sub, null);
 const html = fs.readFileSync(__dirname + "/../docs/index.html", "utf8"), sw = fs.readFileSync(__dirname + "/../docs/sw.js", "utf8");
 const refs = [...html.matchAll(/(?:src|href)="([\w.-]+\.(?:js|css)\?v=[\w.-]+)"/g)].map((m) => "./" + m[1]);
 eq("every ?v= asset is in the SW shell", refs.filter((r) => !sw.includes(`"${r}"`)).join(" ") || "ok", "ok");
-eq("books files versioned", ["books-data.js?v=books2", "books.js?v=books2", "app.js?v=books2"].every((r) => html.includes(r) && sw.includes(r)), true);
-eq("SW version", /const VERSION = "v1\.7\.0"/.test(sw), true);
+eq("books files versioned", ["books-data.js?v=books2", "books.js?v=books2", "app.js?v=bard1"].every((r) => html.includes(r) && sw.includes(r)), true);
+eq("SW version", /const VERSION = "v1\.8\.0"/.test(sw), true);
 eq("Books button", /📚 Books <span class="ur" lang="ur">کتابیں<\/span>/.test(html), true);
 
 // books-data.js matches the canonical JSON (when the tables are on this machine)

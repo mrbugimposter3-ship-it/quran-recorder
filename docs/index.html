@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Recorder — Surah &amp; Ayah Logger</title>
-<link rel="stylesheet" href="styles.css?v=shop1">
+<link rel="stylesheet" href="styles.css?v=bard1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14533a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -119,6 +119,11 @@
           <div id="ap-info" class="muted" dir="ltr"></div>
           <label id="ap-book-wrap" class="check"><input id="ap-book" type="checkbox"> 📚 Show book pairing <span class="ur" lang="ur">کتاب کی جوڑی دکھائیں</span></label>
           <label id="ap-work-wrap">📚 Book <span class="ur" lang="ur">کتاب منتخب کریں</span><select id="ap-work"></select></label>
+          <div id="bard-row" class="bard-row">📖 Read the play <span class="ur" lang="ur">ڈرامہ پڑھیں</span>
+            <button type="button" class="icon-btn" data-bard="macbeth">Macbeth <span class="ur" lang="ur">میکبتھ</span></button>
+            <button type="button" class="icon-btn" data-bard="othello">Othello <span class="ur" lang="ur">اوتھیلو</span></button>
+            <button type="button" class="icon-btn" data-bard="hamlet">Hamlet <span class="ur" lang="ur">ہیملٹ</span></button>
+          </div>
           <div id="bk-current" class="bk-current"></div>
           <div id="ap-cards" class="ap-cards"></div>
           <div class="ap-nav">
@@ -328,6 +333,27 @@
 <script src="number-words.js"></script>
 <script src="word-translations.js"></script>
 <script src="script-builder.js"></script>
+<!-- ============ 📖 SHAKESPEARE READER (play text, lazy-loaded; not Quran, not tafsir) ============ -->
+<div id="bard-reader" class="bard hidden" role="dialog" aria-modal="true" aria-labelledby="bard-title">
+  <div class="bard-top">
+    <div class="bard-row1"><h2 id="bard-title" class="bard-title"></h2><button type="button" id="bard-x" class="icon-btn" aria-label="Close">✕ Close <span class="ur" lang="ur">بند کریں</span></button></div>
+    <div class="bard-tag">🎭 Play text — not Quran, not tafsir <span class="ur" lang="ur">ڈرامے کا متن — قرآن یا تفسیر نہیں</span></div>
+    <div class="bard-ctl">
+      <label>Surah # <span class="ur" lang="ur">سورت نمبر</span> <input id="bard-s" type="number" min="1" max="114" value="1"></label>
+      <button type="button" id="bard-prev" class="icon-btn">◀ Prev <span class="ur" lang="ur">پچھلا</span></button>
+      <select id="bard-scene" aria-label="Act and scene"></select>
+      <button type="button" id="bard-next" class="icon-btn">Next ▶ <span class="ur" lang="ur">اگلا</span></button>
+      <button type="button" id="bard-fs-minus" class="icon-btn" aria-label="Smaller text">A− <span class="ur" lang="ur">چھوٹا</span></button>
+      <button type="button" id="bard-fs-plus" class="icon-btn" aria-label="Bigger text">A+ <span class="ur" lang="ur">بڑا</span></button>
+    </div>
+    <div id="bard-pair" class="bard-pair" dir="ltr"></div>
+  </div>
+  <div id="bard-body" class="bard-body">
+    <details class="bard-dp"><summary>🎭 Characters <span class="ur" lang="ur">کردار</span></summary><ul id="bard-personae"></ul></details>
+    <div id="bard-text" class="bard-text" dir="ltr" lang="en"></div>
+    <div id="bard-src" class="bard-src muted"></div>
+  </div>
+</div>
 <script src="speak-parse.js?v=ghost1"></script>
 <script src="sequences.js?v=ghost1"></script>
 <script src="approve.js?v=ghost1"></script>
@@ -337,7 +363,8 @@
 <script src="wardrobe-data.js?v=letters2"></script>
 <script src="wardrobe.js?v=shop1"></script>
 <script src="spend.js?v=spend1"></script>
-<script src="app.js?v=books2"></script>
+<script src="app.js?v=bard1"></script>
 <script src="ayah-finder.js?v=finder1"></script>
+<script src="bard.js?v=bard1"></script>
 </body>
 </html>

@@ -45,10 +45,10 @@ for (const id of ["af-text", "af-go", "af-status", "af-results"]) eq("has #" + i
 eq("Urdu find label", html.includes("تلاش کریں"), true);
 eq("Pickthall credit on screen", /Pickthall \(1930, public domain\)/.test(html), true);
 eq("ui script versioned", html.includes('src="ayah-finder.js?v=finder1"') && sw.includes('"./ayah-finder.js?v=finder1"'), true);
-eq("styles versioned", html.includes('href="styles.css?v=shop1"') && sw.includes('"./styles.css?v=shop1"'), true);
+eq("styles versioned", html.includes('href="styles.css?v=bard1"') && sw.includes('"./styles.css?v=bard1"'), true);
 eq("engine lazy (not a page script)", /<script[^>]+ayah-match/.test(html), false);
 eq("engine src versioned", F.ENGINE_SRC, "ayah-finder/ayah-match.js?v=finder1");
-eq("SW version", /const VERSION = "v1\.7\.0"/.test(sw), true);
+eq("SW version", /const VERSION = "v1\.8\.0"/.test(sw), true);
 eq("SW model cache survives bumps", /MODEL_CACHE = "ayah-finder-model/.test(sw) && !/MODEL_CACHE = "quran-recorder-/.test(sw), true);
 eq("SW caches model CDNs", /huggingface\\\.co/.test(sw) && /cdn\\\.jsdelivr\\\.net/.test(sw), true);
 eq("transformers.js pinned", /@huggingface\/transformers@3\.8\.1/.test(E.TJS), true);

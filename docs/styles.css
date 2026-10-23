@@ -401,3 +401,31 @@ footer { text-align: center; color: var(--muted); padding: 1rem; font-size: 0.85
 .af-en{font-size:.95rem;margin:.2rem 0 .5rem}
 .af-why{font-size:.8rem;margin:.1rem 0 .4rem}
 .af-note{font-size:.8rem;margin-top:.8rem}
+
+/* 📖 Shakespeare reader · ڈرامہ پڑھیں (play text, separate from Quran text) */
+.bard-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.92em}
+.bard-open-btn{margin-top:4px}
+body.bard-open{overflow:hidden}
+.bard{position:fixed;inset:0;z-index:1000;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+.bard-top{background:var(--panel);border-bottom:1px solid var(--border);padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+.bard-row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bard-title{margin:0;font-size:1.15rem}
+.bard-tag{font-size:.82em;color:#06210f;background:#d4af37;border-radius:6px;padding:2px 8px;align-self:flex-start}
+.bard-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bard-ctl select{max-width:100%;flex:1 1 220px;min-width:0;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px}
+.bard-ctl input{width:4.5em;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px}
+.bard-ctl button:disabled{opacity:.4}
+.bard-pair{font-size:.85em;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bard-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 40px}
+.bard-text{max-width:720px;margin:0 auto;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.bard-dp{max-width:720px;margin:0 auto 8px;font-size:.9em}.bard-dp ul{margin:4px 0;padding-left:1.2em}
+.bard-h{margin:.4em 0 0;font-family:"Segoe UI",system-ui,sans-serif}.bard-place{margin-bottom:.8em;font-size:.9em}
+.bard-paired{font-size:.7em;background:rgba(74,222,128,.18);color:var(--accent);border-radius:6px;padding:1px 6px;vertical-align:middle}
+.bard-sp{margin:0 0 .75em}
+.bard-who{font-family:"Segoe UI",system-ui,sans-serif;font-weight:700;font-size:.78em;letter-spacing:.06em;color:var(--accent2)}
+.bard-ln{white-space:pre-wrap}
+.bard-dir{font-style:italic;color:var(--muted);margin:.3em 0 .75em 1.2em}
+.bard-sd{color:var(--muted)}
+.bard-end{margin-top:1.5em;text-align:center}
+.bard-src{max-width:720px;margin:1em auto 0;font-size:.8em}.bard-src a{color:var(--accent2)}
+@media (max-width:520px){.bard-top{padding:6px 8px}.bard-body{padding:8px 10px 40px}.bard-ctl .ur{display:none}}

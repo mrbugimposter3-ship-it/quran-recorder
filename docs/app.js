@@ -1307,7 +1307,12 @@ function bkCardHtml(c) {
       ${isAr && p.en ? `<div class="muted bk-en">${apEsc(p.en)}</div>` : ""}
       ${p.ja ? `<div class="bk-ja muted" lang="ja">${apEsc(p.ja)}</div>` : ""}
       ${p.summary ? `<div class="ap-sum">${apEsc(p.summary)}</div>` : ""}
-      ${p.line ? `<div class="bk-line" dir="auto">“${apEsc(p.line)}”${p.lineSource ? ` <span class="muted bk-src">— ${apEsc(p.lineSource)}</span>` : ""}</div>` : ""}</div>`;
+      ${p.line ? `<div class="bk-line" dir="auto">“${apEsc(p.line)}”${p.lineSource ? ` <span class="muted bk-src">— ${apEsc(p.lineSource)}</span>` : ""}</div>` : ""}${bkBardBtn(w, p)}</div>`;
+}
+/* 📖 Macbeth / Othello / Hamlet → full-text reader (docs/bard.js, lazy JSON) */
+function bkBardBtn(w, p) {
+  const b = w === "shakespeare" && window.QBard && QBard.byTitle[String(p.title).toLowerCase()];
+  return b ? `<div><button type="button" class="icon-btn bard-open-btn" data-bard="${b.id}">📖 Read the play <span class="ur" lang="ur">ڈرامہ پڑھیں</span></button></div>` : "";
 }
 function bkLogExtra(c) {
   const w = bkWork();
@@ -1337,6 +1342,7 @@ function apRender() {
   if (!ws.options.length) ws.innerHTML = QBooks.WORKS.map((w) => `<option value="${w.id}">${w.icon} ${apEsc(w.en)}${w.ur ? " · " + w.ur : ""}</option>`).join("");
   ws.value = bkWork();
   $("#ap-work-wrap").classList.toggle("hidden", !book);
+  $("#bard-row").classList.toggle("hidden", !book);
   bkRenderCurrent();
   $("#ap-info").textContent = `${QSeq.byId[st.id].en}${st.off ? ` · offset ${st.off}` : ""}${QSeq.byId[st.id].seed ? ` · seed ${st.seed}` : ""} — change offset/seed in 🔢 Seq`;
   try { apShown = QApprove.step(QSeq, SURAHS, st, k, pair); }
