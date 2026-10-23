@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "exportedAt": "2026-10-23T15:01:24.138Z",
+  "exportedAt": "2026-10-23T15:01:34.561Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -91,6 +91,17 @@
       "surah": 51,
       "ayah": 6,
       "global": 4681
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 23,
+      "ayah": 17,
+      "global": 2690,
+      "id": "mvl3li2i45i7p6",
+      "ts": "2026-10-23T15:01:34.266Z",
+      "via": "approve",
+      "seq": "catalan",
+      "term": 7
     }
   ]
 }
