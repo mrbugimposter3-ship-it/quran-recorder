@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "exportedAt": "2026-10-23T12:09:33.193Z",
+  "exportedAt": "2026-10-23T12:09:58.181Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -14,6 +14,34 @@
       "term": 4,
       "geronimo": {
         "book": 21
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 21,
+      "ayah": 89,
+      "global": 2572,
+      "id": "mvkxgtbjptwdgm",
+      "ts": "2026-10-23T12:09:57.871Z",
+      "via": "approve",
+      "seq": "catalan",
+      "term": 5,
+      "geronimo": {
+        "book": 21
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 22,
+      "ayah": 5,
+      "global": 2600,
+      "id": "mvkxgtblba9fuk",
+      "ts": "2026-10-23T12:09:57.873Z",
+      "via": "approve",
+      "seq": "catalan",
+      "term": 6,
+      "geronimo": {
+        "book": 22
       }
     }
   ]
