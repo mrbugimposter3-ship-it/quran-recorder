@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-24",
+  "exportedAt": "2026-10-24T11:52:45.167Z",
+  "entries": [
+    {
+      "type": "ayah-stamp",
+      "surah": 35,
+      "ayah": 3,
+      "global": 3663,
+      "id": "mvmcaisa3ptfl0",
+      "ts": "2026-10-24T11:52:44.698Z",
+      "via": "approve",
+      "seq": "cbrt",
+      "term": 54
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 35,
+      "ayah": 26,
+      "global": 3686,
+      "id": "mvmcaisep2nqcp",
+      "ts": "2026-10-24T11:52:44.702Z",
+      "via": "approve",
+      "seq": "cbrt",
+      "term": 55
+    }
+  ]
+}
