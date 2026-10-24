@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "exportedAt": "2026-10-24T19:43:10.788Z",
+  "exportedAt": "2026-10-24T19:52:12.371Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -379,6 +379,21 @@
       "surah": 3,
       "ayah": 38,
       "global": 331
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 11,
+      "ayah": 96,
+      "global": 1569,
+      "id": "mvmtf3s1qv8m5m",
+      "ts": "2026-10-24T19:52:12.001Z",
+      "via": "approve",
+      "seq": "golden",
+      "term": 18,
+      "book": {
+        "work": "fusus",
+        "unit": 11
+      }
     }
   ]
 }
