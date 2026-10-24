@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "exportedAt": "2026-10-24T19:18:59.394Z",
+  "exportedAt": "2026-10-24T19:42:58.285Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -363,6 +363,14 @@
         "work": "kashf",
         "unit": 9
       }
+    },
+    {
+      "id": "mvmt380hxs9hkv",
+      "type": "ayah-stamp",
+      "ts": "2026-10-24T19:42:57.618Z",
+      "surah": 2,
+      "ayah": 187,
+      "global": 194
     }
   ]
 }
