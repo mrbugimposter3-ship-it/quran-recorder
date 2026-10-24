@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "exportedAt": "2026-10-24T13:12:10.347Z",
+  "exportedAt": "2026-10-24T13:29:07.067Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -191,6 +191,21 @@
       "book": {
         "work": "kashf",
         "unit": 16
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 94,
+      "ayah": 7,
+      "global": 6097,
+      "id": "mvmfqg4uhnnrzc",
+      "ts": "2026-10-24T13:29:06.606Z",
+      "via": "approve",
+      "seq": "cbrt",
+      "term": 65,
+      "book": {
+        "work": "kashf",
+        "unit": 19
       }
     }
   ]
