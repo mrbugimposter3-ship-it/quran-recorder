@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "exportedAt": "2026-10-24T17:12:39.137Z",
+  "exportedAt": "2026-10-24T19:18:59.394Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -333,6 +333,36 @@
       "surah": 5,
       "ayah": 44,
       "global": 713
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 7,
+      "ayah": 171,
+      "global": 1125,
+      "id": "mvms8dcy7ntx4r",
+      "ts": "2026-10-24T19:18:58.210Z",
+      "via": "approve",
+      "seq": "golden",
+      "term": 11,
+      "book": {
+        "work": "kashf",
+        "unit": 7
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 9,
+      "ayah": 28,
+      "global": 1263,
+      "id": "mvms8dd1dlip00",
+      "ts": "2026-10-24T19:18:58.213Z",
+      "via": "approve",
+      "seq": "golden",
+      "term": 12,
+      "book": {
+        "work": "kashf",
+        "unit": 9
+      }
     }
   ]
 }
