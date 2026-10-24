@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "exportedAt": "2026-10-24T19:52:12.371Z",
+  "exportedAt": "2026-10-24T19:52:27.192Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -394,6 +394,14 @@
         "work": "fusus",
         "unit": 11
       }
+    },
+    {
+      "id": "mvmtffb3uv55xd",
+      "type": "ayah-stamp",
+      "ts": "2026-10-24T19:52:26.943Z",
+      "surah": 11,
+      "ayah": 96,
+      "global": 1569
     }
   ]
 }
