@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-25",
+  "exportedAt": "2026-10-25T14:24:57.809Z",
+  "entries": [
+    {
+      "type": "ayah-stamp",
+      "surah": 26,
+      "ayah": 12,
+      "global": 2944,
+      "id": "mvnx642lmfrkh1",
+      "ts": "2026-10-25T14:24:57.117Z",
+      "via": "approve",
+      "seq": "golden",
+      "term": 19,
+      "book": {
+        "work": "shakespeare",
+        "unit": 26,
+        "sub": 12,
+        "subLabel": "Act 2, Scene 2"
+      }
+    }
+  ]
+}
