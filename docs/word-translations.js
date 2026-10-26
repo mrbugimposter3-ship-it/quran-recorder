@@ -41,6 +41,7 @@ const WORD_TRANSLATIONS = {
   "good": "جيد",
   "group": "مجموعة",
   "had": "كان",
+  "has": "لديه",
   "have": "يملك",
   "he": "هو",
   "health": "صحة",
