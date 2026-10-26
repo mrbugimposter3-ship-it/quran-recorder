@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-26",
+  "exportedAt": "2026-10-26T15:19:43.326Z",
+  "entries": [
+    {
+      "type": "ayah-stamp",
+      "surah": 15,
+      "ayah": 38,
+      "global": 1840,
+      "id": "mvpeke24t33uwx",
+      "ts": "2026-10-26T15:19:42.892Z",
+      "via": "approve",
+      "seq": "perfect",
+      "term": 20,
+      "book": {
+        "work": "shakespeare",
+        "unit": 15,
+        "sub": 6,
+        "subLabel": "Act 3, Scene 4"
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 6,
+      "ayah": 137,
+      "global": 926,
+      "id": "mvpeke27rcw9vl",
+      "ts": "2026-10-26T15:19:42.895Z",
+      "via": "approve",
+      "seq": "perfect",
+      "term": 21,
+      "book": {
+        "work": "shakespeare",
+        "unit": 6,
+        "sub": 1,
+        "subLabel": "Act 1, Scene 1"
+      }
+    }
+  ]
+}
