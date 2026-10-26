@@ -1,6 +1,6 @@
 {
   "date": "2026-10-26",
-  "exportedAt": "2026-10-26T15:22:38.812Z",
+  "exportedAt": "2026-10-26T21:26:55.043Z",
   "entries": [
     {
       "type": "ayah-stamp",
@@ -69,6 +69,14 @@
         "sub": 8,
         "subLabel": "Act 2, Scene 5"
       }
+    },
+    {
+      "id": "mvprolrgje6g3k",
+      "type": "ayah-stamp",
+      "ts": "2026-10-26T21:26:54.508Z",
+      "surah": 50,
+      "ayah": 42,
+      "global": 4672
     }
   ]
 }
