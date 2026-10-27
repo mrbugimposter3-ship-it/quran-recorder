@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "exportedAt": "2026-10-27T22:54:19.469Z",
+  "exportedAt": "2026-10-27T22:58:27.817Z",
   "entries": [
     {
       "id": "mvqdjpznlyljok",
@@ -91,6 +91,40 @@
         "unit": 2,
         "sub": 12,
         "subLabel": "Act 3, Scene 2"
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 54,
+      "ayah": 41,
+      "global": 4887,
+      "id": "mvrae6qhh75d2u",
+      "ts": "2026-10-27T22:58:27.353Z",
+      "via": "approve",
+      "seq": "cbrt",
+      "term": 72,
+      "book": {
+        "work": "shakespeare",
+        "unit": 16,
+        "sub": 3,
+        "subLabel": "Act 1, Scene 3"
+      }
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 55,
+      "ayah": 5,
+      "global": 4906,
+      "id": "mvrae6qlx7jn8l",
+      "ts": "2026-10-27T22:58:27.357Z",
+      "via": "approve",
+      "seq": "cbrt",
+      "term": 73,
+      "book": {
+        "work": "shakespeare",
+        "unit": 17,
+        "sub": 5,
+        "subLabel": "Act 2, Scene 2"
       }
     }
   ]
