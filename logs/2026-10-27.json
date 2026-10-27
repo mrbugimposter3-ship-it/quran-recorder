@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "exportedAt": "2026-10-27T07:39:35.383Z",
+  "exportedAt": "2026-10-27T22:44:40.826Z",
   "entries": [
     {
       "id": "mvqdjpznlyljok",
@@ -25,6 +25,31 @@
       "surah": 16,
       "ayah": 80,
       "global": 1981
+    },
+    {
+      "id": "mvqdkqlkqpvxjr",
+      "type": "ayah-stamp",
+      "ts": "2026-10-27T07:39:45.704Z",
+      "surah": 16,
+      "ayah": 90,
+      "global": 1991
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 16,
+      "ayah": 126,
+      "global": 2027,
+      "id": "mvr9wgsoaqf0p9",
+      "ts": "2026-10-27T22:44:40.584Z",
+      "via": "approve",
+      "seq": "tetra",
+      "term": 6,
+      "book": {
+        "work": "shakespeare",
+        "unit": 16,
+        "sub": 12,
+        "subLabel": "Act 3, Scene 4"
+      }
     }
   ]
 }
