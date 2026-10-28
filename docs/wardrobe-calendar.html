@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Month Wardrobe — Quran Recorder</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wc-main{max-width:980px;margin:0 auto;padding:12px}
+  .wc-month{margin:18px 0;padding:10px 12px;border:1px solid var(--border);border-radius:12px}
+  .wc-month h2{font-size:1.1rem;margin:2px 0 8px}
+  .wc-month h2 .muted{font-weight:400}
+  .wc-cards{display:flex;gap:12px;flex-wrap:wrap}
+  .wc-card{flex:1 1 300px;min-width:290px;max-width:460px;background:#0e1830;border:1px solid var(--border);border-radius:10px;padding:8px 10px}
+  .wc-card h3{font-size:.95rem;margin:2px 0 6px}
+  .wc-card h3 .set{color:var(--muted);font-weight:400}
+  .wc-stage{display:flex;gap:10px;align-items:flex-start}
+  .wc-avatar{image-rendering:pixelated;width:144px;height:192px;background:#14213d;border-radius:8px;cursor:pointer;flex:none}
+  .wc-info{font-size:.82rem;line-height:1.45}
+  .wc-png{margin-top:4px;font-size:.75rem}
+  .wc-card .lw-shop{margin-top:6px}
+  .wc-intro{font-size:.9rem;line-height:1.5;color:var(--muted)}
+  .wc-top{display:flex;justify-content:flex-end;gap:10px;align-items:center;max-width:980px;margin:0 auto;padding:0 12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>👗 12-Month Wardrobe <span class="ur" lang="ur">بارہ ماہ کے لباس</span></h1>
+  <p class="subtitle">Same letter method as the app's Letter Wardrobe, applied to whole surah series · <a href="index.html">← back to Quran Recorder</a></p>
+</header>
+<main class="wc-main">
+  <p class="wc-intro">
+    12 months of 9 surahs each: <b>1–9, 10–18, 19–27 … 100–108</b>. Every month gets <b>two outfits that never mix</b>:
+    one from only its <b>odd</b> surahs, one from only its <b>even</b> surahs — all letters of each set are joined into one text
+    (top = first letter, outerwear = middle letter cut by its strength, bottom = last letter, hair = word count).
+    That is 12 × 2 = <b>24 clothes</b>. The six short surahs <b>109–114</b> are outside the months: each gets two more
+    outfits, one from its <b>odd ayahs</b>, one from its <b>even ayahs</b> — 6 × 2 = <b>12 clothes</b>. 36 in total.
+    Letter sounds only; implies nothing about meaning. The avatar is always seen from behind: no face.
+    <span class="ur" lang="ur">ہر مہینے کے دو لباس: طاق سورتوں سے ایک، جفت سورتوں سے ایک۔ مختصر سورتوں میں طاق آیات سے ایک، جفت آیات سے ایک۔ حروف کی آواز سے لباس، معنی سے کوئی تعلق نہیں۔</span>
+  </p>
+  <p class="wc-intro">Tap an avatar to download its PNG. Each card's <b>Real clothes اصل کپڑے</b> list has real product links plus plain
+    <b>Temu تیمو</b> / <b>Macy's میسیز</b> search links for that slot's "&lt;fabric&gt; &lt;garment&gt;".</p>
+  <div id="wc-list"></div>
+</main>
+<footer>📖 Quran Recorder · Month Wardrobe — letter method by <span lang="ar">مخرج</span>/<span lang="ar">صفات</span>, clothes only, never the meaning.</footer>
+<script src="wardrobe-data.js?v=letters2"></script>
+<script src="wardrobe.js?v=shop1"></script>
+<script src="surah-data.js"></script>
+<script src="quran-text.js"></script>
+<script src="wardrobe-calendar.js?v=cal1"></script>
+<script>
+(function () {
+  const LW = window.LetterWardrobe, WC = window.WardrobeCalendar;
+  if (!LW || !WC || !window.QURAN_TEXT) { document.getElementById("wc-list").textContent = "Failed to load wardrobe data."; return; }
+  const root = document.getElementById("wc-list");
+
+  function card(title, setLabel, o) {
+    const s = o.spec, outer = s.outerwear;
+    const el = document.createElement("div");
+    el.className = "wc-card";
+    const part = (label, ur, x, extra) =>
+      `<div class="lw-part"><canvas data-o="${x.order}"></canvas><span>${label} <span class="ur" lang="ur">${ur}</span>: ` +
+      `<b class="lw-ar" lang="ar">${x.letter}</b> ${x.name} → ${x.property}${extra || ""}</span></div>`;
+    el.innerHTML =
+      `<h3>${title} <span class="set">${setLabel}</span></h3>` +
+      `<div class="wc-stage"><canvas class="wc-avatar" aria-label="Outfit avatar"></canvas>` +
+      `<div class="wc-info">id ${s.id} · hair ${s.base.hair.replace("hair_", "")}` +
+      part("Top (first)", "قمیض", s.top) +
+      part("Outer (middle)", "بیرونی", outer, ` · ${outer.style}`) +
+      part("Bottom (last)", "پاجامہ", s.bottom) +
+      `<span class="muted">${s.stats.letters.toLocaleString()} letters · ${s.stats.words.toLocaleString()} words</span>` +
+      `</div></div>` +
+      `<div class="lw-shop">${LW.shopHTML(s)}</div>` +
+      `<div class="wc-png"><button class="wc-png-btn">⬇ PNG</button></div>`;
+    LW.drawAvatar(el.querySelector(".wc-avatar"), s, 3);
+    el.querySelectorAll(".lw-part canvas").forEach((c) => LW.drawSwatch(c, +c.dataset.o, 10, 2));
+    const pngName = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const png = () => {
+      const c = document.createElement("canvas");
+      LW.drawAvatar(c, s, 1);
+      const a = document.createElement("a");
+      a.href = c.toDataURL("image/png"); a.download = `outfit-${pngName}-${s.id}.png`; a.click();
+    };
+    el.querySelector(".wc-avatar").addEventListener("click", png);
+    el.querySelector(".wc-png-btn").addEventListener("click", png);
+    return el;
+  }
+
+  const all = WC.allOutfits(LW, window.QURAN_TEXT, window.SURAHS);
+  for (const m of all.months) {
+    const sec = document.createElement("section");
+    sec.className = "wc-month";
+    sec.innerHTML = `<h2>Month ${m.month} · ${m.name} <span class="muted">· surahs ${m.surahs[0]}–${m.surahs[m.surahs.length - 1]}</span></h2>`;
+    const wrap = document.createElement("div");
+    wrap.className = "wc-cards";
+    wrap.appendChild(card(`Odd surahs — set ${m.month}.${m.name}.odd`, `surahs ${m.odd.surahs.join(", ")}`, m.odd));
+    wrap.appendChild(card(`Even surahs — set ${m.month}.${m.name}.even`, `surahs ${m.even.surahs.join(", ")}`, m.even));
+    sec.appendChild(wrap);
+    root.appendChild(sec);
+  }
+  const sec = document.createElement("section");
+  sec.className = "wc-month";
+  sec.innerHTML = `<h2>Short surahs 109–114 <span class="muted">· outside the months — odd ayahs / even ayahs</span></h2>`;
+  const wrap = document.createElement("div");
+  wrap.className = "wc-cards";
+  for (const sh of all.shorts) {
+    wrap.appendChild(card(`${sh.surah} ${sh.name} ${sh.ar} — odd ayahs`, `ayahs ${sh.odd.ayahs.join(", ")} of ${sh.ayahs}`, sh.odd));
+    wrap.appendChild(card(`${sh.surah} ${sh.name} ${sh.ar} — even ayahs`, `ayahs ${sh.even.ayahs.length ? sh.even.ayahs.join(", ") : "—"} of ${sh.ayahs}`, sh.even));
+  }
+  sec.appendChild(wrap);
+  root.appendChild(sec);
+})();
+</script>
+</body>
+</html>
