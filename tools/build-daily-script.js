@@ -1,12 +1,15 @@
 /* Daily 8 PM ET job: read logs/YYYY-MM-DD.json (pushed from the phone app),
    build a fully Arabic markdown script of the recorded ayahs,
-   write it to scripts/YYYY-MM-DD.md. */
+   write it to scripts/YYYY-MM-DD.md, plus the YouTube variants
+   scripts/YYYY-MM-DD-youtube.md (Arabic) and
+   scripts/YYYY-MM-DD-urdu-youtube.md (Urdu, channel «آیت اور الفاظ»).
+   DATE=YYYY-MM-DD (with FORCE=1) rebuilds a specific day. */
 
 "use strict";
 
 const fs = require("fs");
 const path = require("path");
-const { buildArabicScript, buildYouTubeScript } = require("../docs/script-builder.js");
+const { buildArabicScript, buildYouTubeScript, buildUrduScript } = require("../docs/script-builder.js");
 
 const TZ = "America/New_York";
 
@@ -24,7 +27,9 @@ function etNow() {
   };
 }
 
-const { dateKey, hour } = etNow();
+const now = etNow();
+const dateKey = process.env.DATE || now.dateKey;
+const hour = now.hour;
 
 if (process.env.FORCE !== "1" && hour !== 20) {
   console.log(`New York time is ${hour}:xx — not 8 PM, skipping (this is the other cron slot).`);
@@ -56,4 +61,10 @@ const yt = buildYouTubeScript(dateKey, entries);
 if (yt) {
   fs.writeFileSync(path.join(outDir, `${dateKey}-youtube.md`), yt, "utf8");
   console.log(`✓ Wrote scripts/${dateKey}-youtube.md (${yt.length} chars) — YouTube-ready`);
+}
+
+const ur = buildUrduScript(dateKey, entries);
+if (ur) {
+  fs.writeFileSync(path.join(outDir, `${dateKey}-urdu-youtube.md`), ur, "utf8");
+  console.log(`✓ Wrote scripts/${dateKey}-urdu-youtube.md (${ur.length} chars) — Urdu YouTube-ready`);
 }
