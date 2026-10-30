@@ -23,10 +23,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Translate new number-words to Arabic
+      - name: Translate new number-words to Arabic (+ Urdu column)
         run: node tools/translate-words.js
 
-      - name: Build Arabic script from today's log
+      - name: Build Arabic + Urdu scripts from today's log
         run: node tools/build-daily-script.js
 
       - name: Commit generated script
@@ -34,6 +34,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          git add scripts/*-urdu-youtube.md docs/word-translations-ur.js 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Nothing to commit."
           else
