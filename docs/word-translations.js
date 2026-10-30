@@ -34,6 +34,7 @@ const WORD_TRANSLATIONS = {
   "email": "بريد",
   "find": "يجد",
   "first": "أولاً",
+  "for": "ل",
   "free": "حر",
   "from": "من",
   "games": "ألعاب",
