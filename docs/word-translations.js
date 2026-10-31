@@ -124,6 +124,7 @@ const WORD_TRANSLATIONS = {
   "then": "ثم",
   "there": "هناك",
   "these": "هؤلاء",
+  "they": "هم",
   "this": "هذا",
   "those": "أولئك",
   "through": "خلال",
