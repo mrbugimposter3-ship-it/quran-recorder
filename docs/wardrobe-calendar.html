@@ -20,6 +20,16 @@
   .wc-png{margin-top:4px;font-size:.75rem}
   .wc-card .lw-shop{margin-top:6px}
   .wc-intro{font-size:.9rem;line-height:1.5;color:var(--muted)}
+  .wc-exact{font-size:.8rem;line-height:1.5;background:#0e1830;border-radius:8px;padding:6px 10px;margin-top:6px}
+  .wc-exact b{display:block;margin-bottom:2px}
+  .wc-exact a,.wc-custom a{color:#9cc3ff;word-break:break-word}
+  .wc-custom{margin:18px 0;padding:10px 12px;border:1px solid var(--border);border-radius:12px}
+  .wc-custom h2{font-size:1.1rem;margin:2px 0 4px}
+  .wc-custom p{font-size:.9rem;line-height:1.5;color:var(--muted)}
+  .wc-custom h3{font-size:.95rem;margin:12px 0 4px}
+  .wc-custom ul{margin:4px 0;padding-left:18px;font-size:.86rem;line-height:1.5}
+  .wc-custom li{margin:6px 0}
+  .wc-custom code{font-size:.85em}
   .wc-top{display:flex;justify-content:flex-end;gap:10px;align-items:center;max-width:980px;margin:0 auto;padding:0 12px}
 </style>
 </head>
@@ -38,16 +48,20 @@
     Letter sounds only; implies nothing about meaning. The avatar is always seen from behind: no face.
     <span class="ur" lang="ur">ہر مہینے کے دو لباس: طاق سورتوں سے ایک، جفت سورتوں سے ایک۔ مختصر سورتوں میں طاق آیات سے ایک، جفت آیات سے ایک۔ حروف کی آواز سے لباس، معنی سے کوئی تعلق نہیں۔</span>
   </p>
-  <p class="wc-intro">Tap an avatar to download its PNG. Each card's <b>Real clothes اصل کپڑے</b> list has real product links plus plain
-    <b>Temu تیمو</b> / <b>Macy's میسیز</b> search links for that slot's "&lt;fabric&gt; &lt;garment&gt;".</p>
+  <p class="wc-intro">Tap an avatar to download its PNG. Every slot shows its <b>exact colour</b> (name + hex — the same colour as the pixel avatar), plus <b>exact-colour searches</b> across 8 clothing websites (Temu, Macy's, eBay, Etsy, Amazon, Walmart, ASOS, Google Shopping — Google also gets the hex) for that slot's "&lt;fabric&gt; &lt;garment&gt; &lt;colour&gt;". Nothing exact in stock anywhere? The <a href="#wc-custom">custom clothing suppliers</a> section lists makers who can produce a garment in your exact colour — even a single piece, by printing fabric in the exact hex, or small-batch Pantone dye-to-match.</p>
   <div id="wc-list"></div>
+  <section id="wc-custom" class="wc-custom">
+    <h2>🧵 Custom clothing suppliers <span class="ur" lang="ur">حسبِ ضرورت کپڑے بنانے والے</span></h2>
+    <p>Want a garment in the <b>exact colour of the avatar</b>? These makers produce it: print fabric in the exact hex (one garment, no factory minimum), make-to-measure tailors, or small-batch Pantone dye-to-match services. Facts are from their own pages (Oct 2026), plain links only — no affiliate codes, no store images.</p>
+    <div id="wc-custom-list"></div>
+  </section>
 </main>
 <footer>📖 Quran Recorder · Month Wardrobe — letter method by <span lang="ar">مخرج</span>/<span lang="ar">صفات</span>, clothes only, never the meaning.</footer>
 <script src="wardrobe-data.js?v=letters2"></script>
 <script src="wardrobe.js?v=shop1"></script>
 <script src="surah-data.js"></script>
 <script src="quran-text.js"></script>
-<script src="wardrobe-calendar.js?v=cal1"></script>
+<script src="wardrobe-calendar.js?v=cal2"></script>
 <script>
 (function () {
   const LW = window.LetterWardrobe, WC = window.WardrobeCalendar;
@@ -58,19 +72,28 @@
     const s = o.spec, outer = s.outerwear;
     const el = document.createElement("div");
     el.className = "wc-card";
-    const part = (label, ur, x, extra) =>
+
+    const part = (label, ur, x, extra, colourHTML) =>
       `<div class="lw-part"><canvas data-o="${x.order}"></canvas><span>${label} <span class="ur" lang="ur">${ur}</span>: ` +
-      `<b class="lw-ar" lang="ar">${x.letter}</b> ${x.name} → ${x.property}${extra || ""}</span></div>`;
+      `<b class="lw-ar" lang="ar">${x.letter}</b> ${x.name} → ${x.property}${colourHTML || ""}${extra || ""}</span></div>`;
+    const colour = (x) => ` <span class="lw-dot" style="background:${x.colour}"></span>${WC.colourName(x.colour)} <code>${x.colour}</code>`;
+    const exactRow = (label, slot) => {
+      const links = WC.exactSearchLinks(LW, s, slot).map((l) => `<a href="${l.url}" target="_blank" rel="noopener noreferrer nofollow">${l.store}</a>`).join(" · ");
+      return `<div class="lw-search">${label} “${WC.exactSearchLinks(LW, s, slot)[0].query}”: ${links}</div>`;
+    };
     el.innerHTML =
       `<h3>${title} <span class="set">${setLabel}</span></h3>` +
       `<div class="wc-stage"><canvas class="wc-avatar" aria-label="Outfit avatar"></canvas>` +
       `<div class="wc-info">id ${s.id} · hair ${s.base.hair.replace("hair_", "")}` +
-      part("Top (first)", "قمیض", s.top) +
-      part("Outer (middle)", "بیرونی", outer, ` · ${outer.style}`) +
-      part("Bottom (last)", "پاجامہ", s.bottom) +
+      part("Top (first)", "قمیض", s.top, "", colour(s.top)) +
+      part("Outer (middle)", "بیرونی", outer, ` · ${outer.style}`, colour(outer)) +
+      part("Bottom (last)", "پاجامہ", s.bottom, "", colour(s.bottom)) +
       `<span class="muted">${s.stats.letters.toLocaleString()} letters · ${s.stats.words.toLocaleString()} words</span>` +
       `</div></div>` +
       `<div class="lw-shop">${LW.shopHTML(s)}</div>` +
+      `<div class="wc-exact"><b>Exact-colour searches <span class="ur" lang="ur">عین رنگ تلاش</span></b>` +
+      exactRow("Top", "top") + exactRow("Outer", "outerwear") + exactRow("Bottom", "bottom") +
+      `<div class="muted wc-asof">Plain search links only — no affiliate codes, no store images. Can't find it in stock? <a href="#wc-custom">Have it made in this exact colour ↓</a></div></div>` +
       `<div class="wc-png"><button class="wc-png-btn">⬇ PNG</button></div>`;
     LW.drawAvatar(el.querySelector(".wc-avatar"), s, 3);
     el.querySelectorAll(".lw-part canvas").forEach((c) => LW.drawSwatch(c, +c.dataset.o, 10, 2));
@@ -109,6 +132,17 @@
   }
   sec.appendChild(wrap);
   root.appendChild(sec);
+
+  // 🧵 custom clothing suppliers, grouped by how exact the colour can be
+  const list = document.getElementById("wc-custom-list");
+  const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const TIERS = [
+    { id: "one-off", h: "One garment, exact colour — print the fabric in the exact hex, then sew اپنا ایک کپڑا" },
+    { id: "mtm", h: "Made-to-measure tailors — closest colourway from their fabric books" },
+    { id: "batch", h: "Small-batch Pantone dye-to-match — they dye fabric to your exact colour (MOQs apply)" }
+  ];
+  list.innerHTML = TIERS.map((t) => `<h3>${t.h}</h3><ul>` + WC.CUSTOM_MAKERS.filter((m) => m.tier === t.id).map((m) =>
+    `<li><a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(m.name)}</a> — ${esc(m.makes)}. ${esc(m.note)}</li>`).join("") + "</ul>").join("");
 })();
 </script>
 </body>

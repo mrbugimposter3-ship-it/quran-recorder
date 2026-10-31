@@ -1,6 +1,6 @@
 /* Quran Recorder service worker — caches the app shell only.
    Bump VERSION with every release so phones pick up the new files. */
-const VERSION = "v1.9.0";
+const VERSION = "v1.10.0";
 const CACHE = "quran-recorder-" + VERSION;
 // 🔎 Ayah Finder: transformers.js + the sentence model come from CDNs. Cache-first in a cache that survives
 // version bumps, so the ~23 MB model downloads once. The finder's own data (docs/ayah-finder/) is
@@ -11,7 +11,7 @@ const MODEL_HOSTS = /(^|\.)(huggingface\.co|hf\.co|cdn\.jsdelivr\.net)$/;
 const SHELL = [
   "./", "./index.html", "./styles.css?v=bard1", "./ayah-finder.js?v=finder1", "./bard.js?v=bard1", "./app.js?v=bard1", "./spend.js?v=spend1", "./wardrobe-data.js?v=letters2", "./wardrobe.js?v=shop1", "./speak-parse.js?v=ghost1", "./sequences.js?v=ghost1", "./approve.js?v=ghost1", "./geronimo-books.js?v=ghost1", "./books-data.js?v=books2", "./books.js?v=books2",
   "./surah-data.js", "./quran-text.js", "./number-words.js", "./script-builder.js", "./word-translations.js",
-  "./wardrobe-calendar.html", "./wardrobe-calendar.js?v=cal1",   // 👗 12-Month Wardrobe — part of the shell so installed apps have it offline
+  "./wardrobe-calendar.html", "./wardrobe-calendar.js?v=cal2",   // 👗 12-Month Wardrobe — part of the shell so installed apps have it offline
   "./tree-picker.html?v=ghost1", "./manifest.json",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-192.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"
 ];

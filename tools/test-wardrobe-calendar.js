@@ -67,17 +67,50 @@ for (const group of [all.months.flatMap((m) => [m.odd, m.even]), all.shorts.flat
   }
 assert.strictEqual(q.size, 29);   // deduped "<fabric> <garment>" queries across all 36 outfits
 
+// exact-colour matching: every letter's hex has a colour name, and every outfit slot gets 8 colour-aware store searches
+for (const r of LW_DATA.letters) assert(WC.COLOUR_NAMES[r.colour], `${r.letter} ${r.colour} has no colour name`);
+assert(WC.colourName("#d4a72c") === "mustard gold" && WC.colourName("#f4ecd8") === "cream");
+assert(WC.colourName("#ff0000") === "rust terracotta");                    // fallback = nearest known colour
+assert.strictEqual(WC.EXACT_STORES.length, 8);
+const eq8 = new Set();
+for (const group of all.months.flatMap((m) => [m.odd, m.even]).concat(all.shorts.flatMap((s) => [s.odd, s.even])))
+  for (const slot of ["top", "outerwear", "bottom"]) {
+    const links = WC.exactSearchLinks(LW, group.spec, slot);
+    assert.strictEqual(links.length, 8);
+    for (const l of links) {
+      assert(/^https:\/\/[^\s"'<>]+$/.test(l.url), l.url);
+      assert(!/utm_|aff[_=]|\?tag=|[?&]ref=|[?&]partner/i.test(l.url), l.url);   // plain links, no affiliate codes
+      assert(l.url.includes(encodeURIComponent(l.query.replace(/ #[0-9a-f]{6}$/i, ""))) || l.store === "Google Shopping");
+      assert(l.query.includes(WC.colourName(group.spec[slot].colour)), l.query);
+      assert(l.query.startsWith(LW.searchQuery(group.spec, slot)) && !/undefined/.test(l.query), l.query);   // base = "<fabric> <garment>" (e.g. "stripes" → "striped")
+    }
+    assert(links[7].store === "Google Shopping" && / #[0-9a-f]{6}$/i.test(links[7].query) && links[7].query.includes(group.spec[slot].colour));
+    eq8.add(links[0].query);
+  }
+assert(eq8.size >= 12);                                                       // colour-aware queries vary across outfits
+
+// custom clothing makers: real sites, tiers, published facts in the notes
+assert(WC.CUSTOM_MAKERS.length >= 10);
+for (const m of WC.CUSTOM_MAKERS) {
+  assert(/^https:\/\/[^\s"'<>]+$/.test(m.url), m.url);
+  assert(["one-off", "mtm", "batch"].includes(m.tier) && m.name && m.makes && m.note);
+}
+for (const tier of ["one-off", "mtm", "batch"]) assert(WC.CUSTOM_MAKERS.some((m) => m.tier === tier));
+assert(WC.CUSTOM_MAKERS.some((m) => /Pantone/i.test(m.note) && /MOQ/.test(m.note)));   // dye-to-match with published MOQ
+
 // wiring: the calendar page is in the app everywhere — SW shell (offline), manifest shortcut, footer + Letters picker links
 const html = fs.readFileSync(path.join(docs, "wardrobe-calendar.html"), "utf8");
 const idx = fs.readFileSync(path.join(docs, "index.html"), "utf8");
 const sw = fs.readFileSync(path.join(docs, "sw.js"), "utf8");
 const mf = JSON.parse(fs.readFileSync(path.join(docs, "manifest.json"), "utf8"));
-assert(sw.includes('const VERSION = "v1.9.0"'));
-assert(sw.includes('"./wardrobe-calendar.html"') && sw.includes('"./wardrobe-calendar.js?v=cal1"'));   // offline in every installed app
+assert(sw.includes('const VERSION = "v1.10.0"'));
+assert(sw.includes('"./wardrobe-calendar.html"') && sw.includes('"./wardrobe-calendar.js?v=cal2"'));   // offline in every installed app
 assert(sw.includes("caches.match(req).then((hit) => hit ||"));                                     // offline navigation serves the page itself, not just index.html
 assert.deepStrictEqual(mf.shortcuts.map((s) => s.url), ["./wardrobe-calendar.html?source=pwa"]);   // long-press app shortcut
-for (const src of ["wardrobe-data.js?v=letters2", "wardrobe.js?v=shop1", "surah-data.js", "quran-text.js", "wardrobe-calendar.js?v=cal1"])
+for (const src of ["wardrobe-data.js?v=letters2", "wardrobe.js?v=shop1", "surah-data.js", "quran-text.js", "wardrobe-calendar.js?v=cal2"])
   assert(html.includes(`src="${src}"`), src);                                                    // page loads the same data files as the app
+assert(html.includes("Exact-colour searches") && html.includes("id=\"wc-custom\""));          // colour-aware searches + custom suppliers on the page
+for (const m of WC.CUSTOM_MAKERS) assert(html.includes(m.name.split(" (")[0]) || html.includes("wc-custom-list"), m.name);
 assert((idx.match(/href="wardrobe-calendar\.html"/g) || []).length === 2);                      // footer (all tabs) + Letters picker
 
 // fixed ids — a change here means the letter method itself changed
@@ -85,4 +118,4 @@ assert.strictEqual(all.months[0].odd.spec.id, "db97d4a3");      // January, sura
 assert.strictEqual(all.months[0].even.spec.id, "2bdb28a3");     // January, surahs 2,4,6,8
 assert.strictEqual(all.shorts[5].odd.spec.id, "20ec269e");     // An-Nas 114, ayahs 1,3,5
 
-console.log(`ok — 12 months × 2 (odd/even surahs, never mixed) + 109–114 × 2 (odd/even ayahs) = ${all.count} outfits, ${q.size} distinct search queries`);
+console.log(`ok — 12 months × 2 (odd/even surahs, never mixed) + 109–114 × 2 (odd/even ayahs) = ${all.count} outfits, ${q.size} + ${eq8.size} distinct search queries (fabric / fabric+colour), ${WC.CUSTOM_MAKERS.length} custom makers`);
