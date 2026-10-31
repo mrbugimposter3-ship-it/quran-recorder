@@ -1,6 +1,6 @@
 {
   "date": "2026-10-31",
-  "exportedAt": "2026-10-31T14:23:23.746Z",
+  "exportedAt": "2026-10-31T14:37:13.434Z",
   "entries": [
     {
       "id": "mvwhcwnoy30y73",
@@ -33,6 +33,21 @@
       "surah": 2,
       "ayah": 25,
       "global": 32
+    },
+    {
+      "type": "ayah-stamp",
+      "surah": 114,
+      "ayah": 2,
+      "global": 6232,
+      "id": "mvwi8zvgujk77w",
+      "ts": "2026-10-31T14:37:12.988Z",
+      "via": "approve",
+      "seq": "primes",
+      "term": 18,
+      "book": {
+        "work": "lotr",
+        "unit": 52
+      }
     }
   ]
 }
