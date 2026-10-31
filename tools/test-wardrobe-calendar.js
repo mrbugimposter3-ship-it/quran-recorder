@@ -67,6 +67,19 @@ for (const group of [all.months.flatMap((m) => [m.odd, m.even]), all.shorts.flat
   }
 assert.strictEqual(q.size, 29);   // deduped "<fabric> <garment>" queries across all 36 outfits
 
+// wiring: the calendar page is in the app everywhere — SW shell (offline), manifest shortcut, footer + Letters picker links
+const html = fs.readFileSync(path.join(docs, "wardrobe-calendar.html"), "utf8");
+const idx = fs.readFileSync(path.join(docs, "index.html"), "utf8");
+const sw = fs.readFileSync(path.join(docs, "sw.js"), "utf8");
+const mf = JSON.parse(fs.readFileSync(path.join(docs, "manifest.json"), "utf8"));
+assert(sw.includes('const VERSION = "v1.9.0"'));
+assert(sw.includes('"./wardrobe-calendar.html"') && sw.includes('"./wardrobe-calendar.js?v=cal1"'));   // offline in every installed app
+assert(sw.includes("caches.match(req).then((hit) => hit ||"));                                     // offline navigation serves the page itself, not just index.html
+assert.deepStrictEqual(mf.shortcuts.map((s) => s.url), ["./wardrobe-calendar.html?source=pwa"]);   // long-press app shortcut
+for (const src of ["wardrobe-data.js?v=letters2", "wardrobe.js?v=shop1", "surah-data.js", "quran-text.js", "wardrobe-calendar.js?v=cal1"])
+  assert(html.includes(`src="${src}"`), src);                                                    // page loads the same data files as the app
+assert((idx.match(/href="wardrobe-calendar\.html"/g) || []).length === 2);                      // footer (all tabs) + Letters picker
+
 // fixed ids — a change here means the letter method itself changed
 assert.strictEqual(all.months[0].odd.spec.id, "db97d4a3");      // January, surahs 1,3,5,7,9
 assert.strictEqual(all.months[0].even.spec.id, "2bdb28a3");     // January, surahs 2,4,6,8
